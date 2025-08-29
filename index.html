@@ -320,10 +320,13 @@
       } else { records.push({date, department:dept, section:sec, pageCTP:ctp, dispatchReceived:dispatch, departure, notes:document.getElementById("notes").value, deadlineCTP:dl.ctp||"", deadlineDispatch:dl.dispatch||"", deadlineDeparture:dl.departure||"", delayCTP:isDelayed(ctp,dl.ctp,date), delayDispatch:isDelayed(dispatch,dl.dispatch,date), delayDeparture:isDelayed(departure,dl.departure,date), addedBy:currentUser.username}); }
     }
 
- fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
+
+  fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
   method: "POST",
   body: JSON.stringify({
-    date, department: dept, section: sec,
+    date,
+    department: dept,
+    section: sec,
     pageCTP: ctp,
     dispatchReceived: dispatch,
     departure,
@@ -342,6 +345,7 @@
 .catch(err => console.error(err));
 
 this.reset();
+
 
 
     
@@ -374,4 +378,5 @@ this.reset();
 </script>
 </body>
 </html>
+
 
