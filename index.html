@@ -322,6 +322,8 @@
     const notesValue = document.getElementById("notes").value;
 
 // Prepare data to send
+const dl = deadlines[dept] && deadlines[dept][sec] ? deadlines[dept][sec] : {};
+
 const recordData = {
   date: date,
   department: dept,
@@ -339,17 +341,17 @@ const recordData = {
   addedBy: currentUser.username
 };
 
-// Send to Google Sheets
-fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {  // Replace with your Apps Script Web App URL
+fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
   method: "POST",
   body: JSON.stringify(recordData)
 })
 .then(res => res.json())
 .then(data => {
   console.log("Record saved:", data);
-  renderTable();  // Update your table after saving
+  renderTable();  // update the table on web immediately
 })
 .catch(err => console.error(err));
+
 localStorage.setItem("dispatchRecords", JSON.stringify(records));
     renderTable(); this.reset();
   });
@@ -380,5 +382,6 @@ localStorage.setItem("dispatchRecords", JSON.stringify(records));
 </script>
 </body>
 </html>
+
 
 
