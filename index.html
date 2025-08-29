@@ -8,29 +8,35 @@
 <style>
   body { font-family: 'Roboto', sans-serif; background: linear-gradient(135deg, #f0fff0, #fffde7); margin: 0; padding: 0; }
   h2 { text-align: center; color: #2e7d32; margin-top: 20px; font-weight: 700; }
-  form, #loginForm { background: rgba(255,255,255,0.85); padding:20px; border-radius:20px; box-shadow:0 12px 25px rgba(0,0,0,0.15); display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; margin:15px auto; max-width:95%; backdrop-filter:blur(12px); transition: transform 0.3s; flex-direction:row; }
+  form, #loginForm { background: rgba(255, 255, 255, 0.85); padding: 20px; border-radius: 20px; box-shadow: 0 12px 25px rgba(0,0,0,0.15); display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; margin: 15px auto; max-width: 95%; backdrop-filter: blur(12px); transition: transform 0.3s; flex-direction: row; }
   form:hover, #loginForm:hover { transform: translateY(-3px); }
-  input, select, button { padding:10px; border-radius:12px; border:1px solid #a5d6a7; font-size:14px; transition:0.3s; flex:1 1 200px; min-width:120px; }
-  input:focus, select:focus { outline:none; border-color:#66bb6a; box-shadow:0 0 8px rgba(102,187,106,0.4); }
-  button { background:#66bb6a; color:white; border:none; cursor:pointer; font-weight:500; transition:0.3s; }
-  button:hover { background:#2e7d32; }
-  label { width:100%; font-weight:500; color:#33691e; margin-top:5px; font-size:13px; }
-  #dispatchTable { width:100%; margin:15px auto; border-collapse:collapse; background: rgba(255,255,255,0.85); border-radius:20px; overflow-x:auto; display:block; box-shadow:0 12px 25px rgba(0,0,0,0.1); backdrop-filter:blur(10px); }
-  th, td { padding:10px; text-align:left; border-bottom:1px solid #c5e1a5; font-size:12px; color:#33691e; white-space:nowrap; }
-  th { background:#aed581; color:#1b5e20; font-weight:600; }
-  tr:hover { background: rgba(205,220,57,0.2); }
-  button.actionBtn { background:#9ccc65; margin-right:5px; font-size:11px; padding:4px 8px; }
-  button.actionBtn.delete { background:#ef5350; }
-  .delayed { color:red; font-weight:bold; }
-  #app p { text-align:center; font-weight:500; color:#2e7d32; }
-  #app p button { background:#33691e; padding:5px 8px; margin-left:5px; border-radius:8px; font-size:12px; }
-  #app p button:hover { background:#66bb6a; }
+  input, select, button { padding: 10px; border-radius: 12px; border: 1px solid #a5d6a7; font-size: 14px; transition: 0.3s; flex: 1 1 200px; min-width: 120px; }
+  input:focus, select:focus { outline: none; border-color: #66bb6a; box-shadow: 0 0 8px rgba(102, 187, 106, 0.4); }
+  button { background: #66bb6a; color: white; border: none; cursor: pointer; font-weight: 500; transition: 0.3s; }
+  button:hover { background: #2e7d32; }
+  label { width: 100%; font-weight: 500; color: #33691e; margin-top: 5px; font-size: 13px; }
+  #dispatchTable { width: 100%; margin: 15px auto; border-collapse: collapse; background: rgba(255, 255, 255, 0.85); border-radius: 20px; overflow-x: auto; display: block; box-shadow: 0 12px 25px rgba(0,0,0,0.1); backdrop-filter: blur(10px); }
+  th, td { padding: 10px; text-align: left; border-bottom: 1px solid #c5e1a5; font-size: 12px; color: #33691e; white-space: nowrap; }
+  th { background: #aed581; color: #1b5e20; font-weight: 600; }
+  tr:hover { background: rgba(205, 220, 57, 0.2); }
+  button.actionBtn { background: #9ccc65; margin-right: 5px; font-size: 11px; padding: 4px 8px; }
+  button.actionBtn.delete { background: #ef5350; }
+  .delayed { color: red; font-weight: bold; }
+  #app p { text-align: center; font-weight: 500; color: #2e7d32; }
+  #app p button { background: #33691e; padding: 5px 8px; margin-left: 5px; border-radius: 8px; font-size: 12px; }
+  #app p button:hover { background: #66bb6a; }
   .password-container { position: relative; width: 100%; }
   .password-container input[type="password"] { width: 100%; padding-right: 35px; }
-  .password-container .toggle-password { position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; font-size:14px; color:#33691e; }
-  #filters { display:flex; flex-wrap:wrap; gap:10px; margin:10px auto; max-width:95%; justify-content:flex-end; }
-  #filters select, #filters button { flex:1 1 150px; }
-  @media (max-width:768px){ form,#loginForm{flex-direction:column;} #filters{flex-direction:column;align-items:stretch;} th,td{font-size:11px;padding:6px;} button.actionBtn{font-size:10px;padding:3px 6px;} #app p button{font-size:11px;padding:4px 6px;} }
+  .password-container .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 14px; color: #33691e; }
+  #filters { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px auto; max-width: 95%; justify-content: flex-end; }
+  #filters select, #filters button { flex: 1 1 150px; }
+  @media (max-width: 768px) {
+    form, #loginForm { flex-direction: column; }
+    #filters { flex-direction: column; align-items: stretch; }
+    th, td { font-size: 11px; padding: 6px; }
+    button.actionBtn { font-size: 10px; padding: 3px 6px; }
+    #app p button { font-size: 11px; padding: 4px 6px; }
+  }
 </style>
 </head>
 <body>
@@ -143,47 +149,33 @@
   </table>
 </div>
 
-<!-- Firebase & XLSX -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-<script>
-  // ======== Firebase config ========
- const firebaseConfig = {
-  apiKey: "AIzaSyDxE1d9nCYUTjmipUJ3zPSvtaFwypkk0bI",
-  authDomain: "dispatchwebapp-66959.firebaseapp.com",
-  projectId: "dispatchwebapp-66959",
-  storageBucket: "dispatchwebapp-66959.firebasestorage.app",
-  messagingSenderId: "984217204226",
-  appId: "1:984217204226:web:ab6efa24a54345fc57d91b",
-  measurementId: "G-4N950SN8V9"
-};
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, setDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  // ======== Users & Deadlines ========
-  const users = {
-    "admin": { password: "admin123", role: "admin" },
-    "raja": { password: "raja123", role: "Assistant" },
-    "akila": { password: "akila123", role: "Akila" },
-    "uchitha": { password: "uchitha123", role: "Manager" },
-    "rohitha": { password: "rohitha123", role: "Rohitha" },
-    "charith": { password: "charith123", role: "Editor" }
-  };
-  const deadlines = {
-    "SPORTS": { "1st Section": { ctp:"07:00", dispatch:"02:30", departure:"03:15" }, "2nd Section": {ctp:"00:00", dispatch:"02:30", departure:""} },
-    "Racing UK": { "1st Section UK":{ctp:"22:30", dispatch:"01:15", departure:""}, "2nd Section UK":{ctp:"23:30", dispatch:"02:00", departure:""}, "1st Section RST UK":{ctp:"01:50", dispatch:"02:40", departure:""}, "2nd Section RST UK":{ctp:"01:50", dispatch:"02:55", departure:""} },
-    "Racing AUS": { "AUS Publication":{ctp:"22:30", dispatch:"11:00", departure:""}, "AUS RST":{ctp:"21:30", dispatch:"11:00", departure:""} }
+  const firebaseConfig = {
+    apiKey: "AIzaSyDxE1d9nCYUTjmipUJ3zPSvtaFwypkk0bI",
+    authDomain: "dispatchwebapp-66959.firebaseapp.com",
+    projectId: "dispatchwebapp-66959",
+    storageBucket: "dispatchwebapp-66959.appspot.com",
+    messagingSenderId: "984217204226",
+    appId: "1:984217204226:web:ab6efa24a54345fc57d91b"
   };
 
-  let currentUser = null, records = [], filteredRecords = [];
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-  // ======== Login ========
+  // Users & deadlines
+  const users = { "admin": { password: "admin123", role: "admin" }, "raja": { password: "raja123", role: "Assistant" }, "akila": { password: "akila123", role: "Akila" }, "uchitha": { password: "uchitha123", role: "Manager" }, "rohitha": { password: "rohitha123", role: "Rohitha" }, "charith": { password: "charith123", role: "Editor" } };
+  const deadlines = { "SPORTS": { "1st Section": { ctp:"07:00", dispatch:"02:30", departure:"03:15" }, "2nd Section": {ctp:"00:00", dispatch:"02:30", departure:""} }, "Racing UK": { "1st Section UK":{ctp:"22:30", dispatch:"01:15", departure:""}, "2nd Section UK":{ctp:"23:30", dispatch:"02:00", departure:""}, "1st Section RST UK":{ctp:"01:50", dispatch:"02:40", departure:""}, "2nd Section RST UK":{ctp:"01:50", dispatch:"02:55", departure:""} }, "Racing AUS": { "AUS Publication":{ctp:"22:30", dispatch:"11:00", departure:""}, "AUS RST":{ctp:"21:30", dispatch:"11:00", departure:""} } };
+
+  let currentUser=null, records=[] , filteredRecords=[];
+
   document.getElementById("loginForm").addEventListener("submit", e=>{
     e.preventDefault();
-    const u=document.getElementById("username").value;
-    const p=document.getElementById("password").value;
+    const u=document.getElementById("username").value, p=document.getElementById("password").value;
     if(users[u] && users[u].password===p){
       currentUser={username:u, role:users[u].role};
       document.getElementById("loginForm").style.display="none";
@@ -192,167 +184,86 @@
       document.getElementById("role").textContent=currentUser.role;
       document.getElementById("adminControls").style.display=currentUser.role==="admin"?"block":"none";
       document.getElementById("filters").style.display=currentUser.role==="admin"?"flex":"none";
-      fetchRecords(); // Load from Firebase
     } else { alert("Invalid credentials"); }
   });
 
-  function logout(){
-    currentUser=null;
-    document.getElementById("app").style.display="none";
-    document.getElementById("loginForm").style.display="flex";
-    document.getElementById("username").value="";
-    document.getElementById("password").value="";
-  }
+  function logout(){ currentUser=null; document.getElementById("app").style.display="none"; document.getElementById("loginForm").style.display="flex"; document.getElementById("username").value=""; document.getElementById("password").value=""; }
 
-  function togglePassword(){
-    const pwd=document.getElementById("password");
-    pwd.type=pwd.type==="password"?"text":"password";
-  }
+  function parseTimeToDate(timeStr, baseDate){ if(!timeStr) return null; let [h,m]=timeStr.split(":"); let d=new Date(baseDate); d.setHours(+h,+m,0,0); if(+h<6) d.setDate(d.getDate()+1); return d; }
+  function isDelayed(timeStr, deadlineStr, baseDate){ if(!timeStr||!deadlineStr) return "No"; return parseTimeToDate(timeStr, baseDate)>parseTimeToDate(deadlineStr, baseDate)?"Yes":"No"; }
 
-  function parseTimeToDate(timeStr, baseDate){
-    if(!timeStr) return null;
-    let [h,m]=timeStr.split(":");
-    let d=new Date(baseDate); d.setHours(+h,+m,0,0);
-    if(+h<6) d.setDate(d.getDate()+1);
-    return d;
-  }
-
-  function isDelayed(timeStr, deadlineStr, baseDate){
-    if(!timeStr||!deadlineStr) return "No";
-    return parseTimeToDate(timeStr, baseDate) > parseTimeToDate(deadlineStr, baseDate) ? "Yes" : "No";
-  }
-
-  // ======== Fetch from Firebase ========
-  function fetchRecords(){
-    db.collection("dispatchRecords").onSnapshot(snapshot=>{
-      records=[];
-      snapshot.forEach(doc=>{
-        let data = doc.data();
-        data.id = doc.id; // Save doc ID
-        records.push(data);
-      });
-      renderTable();
+  // Load records from Firestore
+  onSnapshot(collection(db, "dispatchRecords"), snapshot=>{
+    records = [];
+    snapshot.forEach(docSnap=>{
+      let data = docSnap.data();
+      data.id = docSnap.id;
+      records.push(data);
     });
-  }
-
-  // ======== Add/Edit Record ========
-  document.getElementById("dispatchForm").addEventListener("submit", function(e){
-    e.preventDefault();
-    const date=document.getElementById("date").value;
-    const dept=document.getElementById("department").value;
-    const sec=document.getElementById("section").value;
-    const ctp=document.getElementById("pageCTP").value;
-    const dispatch=document.getElementById("dispatchReceived").value;
-    const departure=document.getElementById("departure").value;
-    const notes=document.getElementById("notes").value;
-    const departureAll=document.getElementById("departureAll").checked;
-    const dl=deadlines[dept] && deadlines[dept][sec]?deadlines[dept][sec]:{};
-
-    if(departureAll && departure){
-      // Update all departures on the same date
-      records.forEach(r=>{
-        if(r.date===date){
-          db.collection("dispatchRecords").doc(r.id).update({
-            departure,
-            deadlineDeparture: deadlines[r.department]&&deadlines[r.department][r.section]?deadlines[r.department][r.section].departure:"",
-            delayDeparture: isDelayed(departure, deadlines[r.department]&&deadlines[r.department][r.section]?deadlines[r.department][r.section].departure:"", date)
-          });
-        }
-      });
-    } else {
-      // Check existing
-      let existing = records.find(r=>r.date===date && r.department===dept && r.section===sec);
-      const recordObj = {
-        date, department:dept, section:sec, pageCTP:ctp, dispatchReceived:dispatch,
-        departure, notes, addedBy: currentUser.username,
-        deadlineCTP: dl.ctp||"", deadlineDispatch: dl.dispatch||"", deadlineDeparture: dl.departure||"",
-        delayCTP: isDelayed(ctp, dl.ctp||"", date),
-        delayDispatch: isDelayed(dispatch, dl.dispatch||"", date),
-        delayDeparture: isDelayed(departure, dl.departure||"", date)
-      };
-      if(existing){
-        db.collection("dispatchRecords").doc(existing.id).set(recordObj);
-      } else {
-        db.collection("dispatchRecords").add(recordObj);
-      }
-    }
-    this.reset();
+    renderTable();
   });
 
-  // ======== Render Table ========
+  document.getElementById("dispatchForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+    const date=document.getElementById("date").value, dept=document.getElementById("department").value, sec=document.getElementById("section").value;
+    const ctp=document.getElementById("pageCTP").value, dispatch=document.getElementById("dispatchReceived").value, departure=document.getElementById("departure").value;
+    const departureAll=document.getElementById("departureAll").checked, dl=deadlines[dept] && deadlines[dept][sec]?deadlines[dept][sec]:{};
+    try{
+      if(departureAll && departure){
+        for(const r of records){
+          if(r.date===date){
+            r.departure = departure;
+            const dlDept = deadlines[r.department] && deadlines[r.department][r.section]?deadlines[r.department][r.section]:{};
+            r.deadlineDeparture = dlDept.departure||"";
+            r.delayDeparture = isDelayed(r.departure,r.deadlineDeparture,r.date);
+            await setDoc(doc(db, "dispatchRecords", r.id), r);
+          }
+        }
+      } else {
+        let existing = records.find(r=>r.date===date && r.department===dept && r.section===sec);
+        if(existing){
+          if(ctp) existing.pageCTP=ctp;
+          if(dispatch) existing.dispatchReceived=dispatch;
+          if(departure) existing.departure=departure;
+          if(document.getElementById("notes").value) existing.notes=document.getElementById("notes").value;
+          existing.deadlineCTP=dl.ctp||""; existing.deadlineDispatch=dl.dispatch||""; existing.deadlineDeparture=dl.departure||"";
+          existing.delayCTP=isDelayed(existing.pageCTP,dl.ctp,date);
+          existing.delayDispatch=isDelayed(existing.dispatchReceived,dl.dispatch,date);
+          existing.delayDeparture=isDelayed(existing.departure,dl.departure,date);
+          await setDoc(doc(db, "dispatchRecords", existing.id), existing);
+        } else {
+          let newRecord = { date, department:dept, section:sec, pageCTP:ctp, dispatchReceived:dispatch, departure, notes:document.getElementById("notes").value, deadlineCTP:dl.ctp||"", deadlineDispatch:dl.dispatch||"", deadlineDeparture:dl.departure||"", delayCTP:isDelayed(ctp,dl.ctp,date), delayDispatch:isDelayed(dispatch,dl.dispatch,date), delayDeparture:isDelayed(departure,dl.departure,date), addedBy:currentUser.username };
+          await addDoc(collection(db, "dispatchRecords"), newRecord);
+        }
+      }
+      this.reset();
+    }catch(err){ console.error(err); }
+  });
+
   function renderTable(){
-    const tbody=document.querySelector("#dispatchTable tbody");
-    tbody.innerHTML="";
+    const tbody=document.querySelector("#dispatchTable tbody"); tbody.innerHTML="";
     const data=filteredRecords.length?filteredRecords:records;
-    data.forEach(rec=>{
+    data.forEach((rec,idx)=>{
       const tr=document.createElement("tr");
-      tr.innerHTML=`<td>${rec.date}</td><td>${rec.department}</td><td>${rec.section}</td>
-      <td>${rec.pageCTP}</td><td>${rec.dispatchReceived}</td><td>${rec.departure}</td><td>${rec.notes}</td>
-      <td>${rec.deadlineCTP}</td><td>${rec.deadlineDispatch}</td><td>${rec.deadlineDeparture}</td>
-      <td class="${rec.delayCTP==='Yes'?'delayed':''}">${rec.delayCTP}</td>
-      <td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td>
-      <td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td>
-      <td>${currentUser.role==="admin"?rec.addedBy:""}</td><td></td>`;
+      tr.innerHTML=`<td>${rec.date}</td><td>${rec.department}</td><td>${rec.section}</td><td>${rec.pageCTP}</td><td>${rec.dispatchReceived}</td><td>${rec.departure}</td><td>${rec.notes}</td><td>${rec.deadlineCTP}</td><td>${rec.deadlineDispatch}</td><td>${rec.deadlineDeparture}</td><td class="${rec.delayCTP==='Yes'?'delayed':''}">${rec.delayCTP}</td><td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td><td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td><td>${currentUser.role==="admin"?rec.addedBy:""}</td><td></td>`;
       const actionsCell=tr.querySelector("td:last-child");
       if(currentUser.role==="admin"){
-        const editBtn=document.createElement("button"); editBtn.textContent="Edit"; editBtn.className="actionBtn";
-        editBtn.onclick=()=>editRecord(rec.id);
-        const delBtn=document.createElement("button"); delBtn.textContent="Delete"; delBtn.className="actionBtn delete";
-        delBtn.onclick=()=>deleteRecord(rec.id);
+        const editBtn=document.createElement("button"); editBtn.textContent="Edit"; editBtn.className="actionBtn"; editBtn.onclick=()=>editRecord(idx);
+        const delBtn=document.createElement("button"); delBtn.textContent="Delete"; delBtn.className="actionBtn delete"; delBtn.onclick=()=>deleteRecord(idx);
         actionsCell.appendChild(editBtn); actionsCell.appendChild(delBtn);
       }
       tbody.appendChild(tr);
     });
   }
 
-  // ======== Edit/Delete ========
-  function editRecord(recordId){
-    const rec = records.find(r=>r.id===recordId);
-    document.getElementById("date").value=rec.date;
-    document.getElementById("department").value=rec.department;
-    document.getElementById("section").value=rec.section;
-    document.getElementById("pageCTP").value=rec.pageCTP;
-    document.getElementById("dispatchReceived").value=rec.dispatchReceived;
-    document.getElementById("departure").value=rec.departure;
-    document.getElementById("notes").value=rec.notes;
-    db.collection("dispatchRecords").doc(recordId).delete();
-  }
+  function editRecord(index){ const rec=records[index]; document.getElementById("date").value=rec.date; document.getElementById("department").value=rec.department; document.getElementById("section").value=rec.section; document.getElementById("pageCTP").value=rec.pageCTP; document.getElementById("dispatchReceived").value=rec.dispatchReceived; document.getElementById("departure").value=rec.departure; document.getElementById("notes").value=rec.notes; deleteDoc(doc(db,"dispatchRecords",rec.id)); }
+  async function deleteRecord(index){ if(confirm("Delete this record?")){ await deleteDoc(doc(db,"dispatchRecords",records[index].id)); } }
+  async function clearAllData(){ if(confirm("Are you sure you want to clear ALL records?")){ for(const r of records){ await deleteDoc(doc(db,"dispatchRecords",r.id)); } } }
+  document.getElementById("exportExcel").addEventListener("click", function(){ const ws=XLSX.utils.json_to_sheet(records); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Dispatch"); XLSX.writeFile(wb,"dispatch.xlsx"); });
+  function togglePassword(){ const pwd=document.getElementById("password"); pwd.type=pwd.type==="password"?"text":"password"; }
+  function applyFilter(){ const dept=document.getElementById("filterDept").value, sec=document.getElementById("filterSection").value; filteredRecords=records.filter(r=> (dept===""||r.department===dept)&&(sec===""||r.section===sec)); renderTable(); }
+  function clearFilter(){ document.getElementById("filterDept").value=""; document.getElementById("filterSection").value=""; filteredRecords=[]; renderTable(); }
 
-  function deleteRecord(recordId){
-    if(confirm("Delete this record?")){
-      db.collection("dispatchRecords").doc(recordId).delete();
-    }
-  }
-
-  function clearAllData(){
-    if(confirm("Are you sure you want to clear ALL records?")){
-      records.forEach(r=>db.collection("dispatchRecords").doc(r.id).delete());
-    }
-  }
-
-  // ======== Excel Export ========
-  document.getElementById("exportExcel").addEventListener("click", function(){
-    const ws=XLSX.utils.json_to_sheet(records);
-    const wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,"Dispatch");
-    XLSX.writeFile(wb,"dispatch.xlsx");
-  });
-
-  // ======== Filters ========
-  function applyFilter(){
-    const dept=document.getElementById("filterDept").value;
-    const sec=document.getElementById("filterSection").value;
-    filteredRecords = records.filter(r=> (dept===""||r.department===dept)&&(sec===""||r.section===sec));
-    renderTable();
-  }
-
-  function clearFilter(){
-    document.getElementById("filterDept").value="";
-    document.getElementById("filterSection").value="";
-    filteredRecords=[];
-    renderTable();
-  }
 </script>
 </body>
 </html>
-
