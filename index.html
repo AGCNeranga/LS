@@ -320,36 +320,29 @@
       } else { records.push({date, department:dept, section:sec, pageCTP:ctp, dispatchReceived:dispatch, departure, notes:document.getElementById("notes").value, deadlineCTP:dl.ctp||"", deadlineDispatch:dl.dispatch||"", deadlineDeparture:dl.departure||"", delayCTP:isDelayed(ctp,dl.ctp,date), delayDispatch:isDelayed(dispatch,dl.dispatch,date), delayDeparture:isDelayed(departure,dl.departure,date), addedBy:currentUser.username}); }
     }
 
-    const recordData = {
-  date: date,
-  department: dept,
-  section: sec,
-  pageCTP: ctp,
-  dispatchReceived: dispatch,
-  departure: departure,
-  notes: document.getElementById("notes").value,
-  deadlineCTP: dl.ctp || "",
-  deadlineDispatch: dl.dispatch || "",
-  deadlineDeparture: dl.departure || "",
-  delayCTP: isDelayed(ctp, dl.ctp, date),
-  delayDispatch: isDelayed(dispatch, dl.dispatch, date),
-  delayDeparture: isDelayed(departure, dl.departure, date),
-  addedBy: currentUser.username
-};
-
-fetch("
-https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
+ fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
   method: "POST",
-  body: JSON.stringify(recordData)
+  body: JSON.stringify({
+    date, department: dept, section: sec,
+    pageCTP: ctp,
+    dispatchReceived: dispatch,
+    departure,
+    notes: document.getElementById("notes").value,
+    deadlineCTP: dl.ctp || "",
+    deadlineDispatch: dl.dispatch || "",
+    deadlineDeparture: dl.departure || "",
+    delayCTP: isDelayed(ctp, dl.ctp, date),
+    delayDispatch: isDelayed(dispatch, dl.dispatch, date),
+    delayDeparture: isDelayed(departure, dl.departure, date),
+    addedBy: currentUser.username
+  })
 })
 .then(res => res.json())
-.then(data => {
-  console.log("Saved to Google Sheets:", data);
-  renderTable();  // update table in web page
-})
+.then(data => { console.log("Saved:", data); renderTable(); })
 .catch(err => console.error(err));
 
 this.reset();
+
 
     
     renderTable(); this.reset();
@@ -381,3 +374,4 @@ this.reset();
 </script>
 </body>
 </html>
+
