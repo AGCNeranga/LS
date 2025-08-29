@@ -319,7 +319,32 @@
         existing.delayCTP=isDelayed(existing.pageCTP,dl.ctp,date); existing.delayDispatch=isDelayed(existing.dispatchReceived,dl.dispatch,date); existing.delayDeparture=isDelayed(existing.departure,dl.departure,date);
       } else { records.push({date, department:dept, section:sec, pageCTP:ctp, dispatchReceived:dispatch, departure, notes:document.getElementById("notes").value, deadlineCTP:dl.ctp||"", deadlineDispatch:dl.dispatch||"", deadlineDeparture:dl.departure||"", delayCTP:isDelayed(ctp,dl.ctp,date), delayDispatch:isDelayed(dispatch,dl.dispatch,date), delayDeparture:isDelayed(departure,dl.departure,date), addedBy:currentUser.username}); }
     }
-    localStorage.setItem("dispatchRecords", JSON.stringify(records));
+    const notesValue = document.getElementById("notes").value;
+
+// Prepare data to send
+const recordData = {
+  date,
+  department: dept,
+  section: sec,
+  pageCTP: ctp,
+  dispatchReceived: dispatch,
+  departure,
+  notes: notesValue,
+  addedBy: currentUser.username
+};
+
+// Send to Google Sheets
+fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {  // Replace with your Apps Script Web App URL
+  method: "POST",
+  body: JSON.stringify(recordData)
+})
+.then(res => res.json())
+.then(data => {
+  console.log("Record saved:", data);
+  renderTable();  // Update your table after saving
+})
+.catch(err => console.error(err));
+localStorage.setItem("dispatchRecords", JSON.stringify(records));
     renderTable(); this.reset();
   });
 
@@ -349,3 +374,4 @@
 </script>
 </body>
 </html>
+
