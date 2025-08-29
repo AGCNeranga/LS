@@ -323,13 +323,19 @@
 
 // Prepare data to send
 const recordData = {
-  date,
+  date: date,
   department: dept,
   section: sec,
   pageCTP: ctp,
   dispatchReceived: dispatch,
-  departure,
-  notes: notesValue,
+  departure: departure,
+  notes: document.getElementById("notes").value,
+  deadlineCTP: dl.ctp || "",
+  deadlineDispatch: dl.dispatch || "",
+  deadlineDeparture: dl.departure || "",
+  delayCTP: isDelayed(ctp, dl.ctp, date),
+  delayDispatch: isDelayed(dispatch, dl.dispatch, date),
+  delayDeparture: isDelayed(departure, dl.departure, date),
   addedBy: currentUser.username
 };
 
@@ -374,4 +380,5 @@ localStorage.setItem("dispatchRecords", JSON.stringify(records));
 </script>
 </body>
 </html>
+
 
