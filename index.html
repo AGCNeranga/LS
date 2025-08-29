@@ -1,157 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Dispatch Tracker</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  body {
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(135deg, #f0fff0, #fffde7);
-    margin: 0;
-    padding: 0;
-  }
+  <meta charset="UTF-8">
+  <title>Dispatch Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #f0fff0, #fffde7);
+      margin: 0;
+      padding: 0;
+    }
 
-  h2 {
-    text-align: center;
-    color: #2e7d32;
-    margin-top: 20px;
-    font-weight: 700;
-  }
+    h2 {
+      text-align: center;
+      color: #2e7d32;
+      margin-top: 30px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
 
-  form, #loginForm {
-    background: rgba(255, 255, 255, 0.85);
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: space-between;
-    margin: 15px auto;
-    max-width: 95%;
-    backdrop-filter: blur(12px);
-    transition: transform 0.3s;
-    flex-direction: row;
-  }
+    form, #loginForm {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: space-between;
+      margin: 20px auto;
+      max-width: 950px;
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s;
+    }
 
-  form:hover, #loginForm:hover { transform: translateY(-3px); }
+    form:hover, #loginForm:hover {
+      transform: translateY(-3px);
+    }
 
-  input, select, button {
-    padding: 10px;
-    border-radius: 12px;
-    border: 1px solid #a5d6a7;
-    font-size: 14px;
-    transition: 0.3s;
-    flex: 1 1 200px;
-    min-width: 120px;
-  }
+    input, select, button {
+      padding: 12px 15px;
+      border-radius: 12px;
+      border: 1px solid #a5d6a7;
+      font-size: 14px;
+      transition: 0.3s;
+    }
 
-  input:focus, select:focus {
-    outline: none;
-    border-color: #66bb6a;
-    box-shadow: 0 0 8px rgba(102, 187, 106, 0.4);
-  }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #66bb6a;
+      box-shadow: 0 0 8px rgba(102, 187, 106, 0.4);
+    }
 
-  button {
-    background: #66bb6a;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-    transition: 0.3s;
-  }
+    button {
+      background: #66bb6a;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.3s;
+    }
 
-  button:hover { background: #2e7d32; }
+    button:hover {
+      background: #2e7d32;
+    }
 
-  label { width: 100%; font-weight: 500; color: #33691e; margin-top: 5px; font-size: 13px; }
+    label {
+      width: 100%;
+      font-weight: 500;
+      color: #33691e;
+      margin-top: 5px;
+      font-size: 13px;
+    }
 
-  #dispatchTable {
-    width: 100%;
-    margin: 15px auto;
-    border-collapse: collapse;
-    background: rgba(255, 255, 255, 0.85);
-    border-radius: 20px;
-    overflow-x: auto;
-    display: block;
-    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
-  }
+    #dispatchTable {
+      width: 95%;
+      margin: 25px auto;
+      border-collapse: collapse;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+      backdrop-filter: blur(10px);
+    }
 
-  th, td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #c5e1a5;
-    font-size: 12px;
-    color: #33691e;
-    white-space: nowrap;
-  }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #c5e1a5;
+      font-size: 13px;
+      color: #33691e;
+    }
 
-  th {
-    background: #aed581;
-    color: #1b5e20;
-    font-weight: 600;
-  }
+    th {
+      background: #aed581;
+      color: #1b5e20;
+      font-weight: 600;
+    }
 
-  tr:hover { background: rgba(205, 220, 57, 0.2); }
+    tr:hover {
+      background: rgba(205, 220, 57, 0.2);
+    }
 
-  button.actionBtn {
-    background: #9ccc65;
-    margin-right: 5px;
-    font-size: 11px;
-    padding: 4px 8px;
-  }
+    button.actionBtn {
+      background: #9ccc65;
+      margin-right: 5px;
+      font-size: 12px;
+      padding: 5px 10px;
+    }
 
-  button.actionBtn.delete { background: #ef5350; }
+    button.actionBtn.delete {
+      background: #ef5350;
+    }
 
-  .delayed { color: red; font-weight: bold; }
+    button.actionBtn:hover {
+      opacity: 0.9;
+    }
 
-  #app p { text-align: center; font-weight: 500; color: #2e7d32; }
+    .delayed {
+      color: red;
+      font-weight: bold;
+    }
 
-  #app p button {
-    background: #33691e;
-    padding: 5px 8px;
-    margin-left: 5px;
-    border-radius: 8px;
-    font-size: 12px;
-  }
+    #app p {
+      text-align: center;
+      font-weight: 500;
+      color: #2e7d32;
+    }
 
-  #app p button:hover { background: #66bb6a; }
+    #app p button {
+      background: #33691e;
+      padding: 5px 10px;
+      margin-left: 10px;
+      border-radius: 8px;
+    }
 
-  .password-container { position: relative; width: 100%; }
+    #app p button:hover {
+      background: #66bb6a;
+    }
 
-  .password-container input[type="password"] { width: 100%; padding-right: 35px; }
+    .password-container {
+      position: relative;
+      width: 100%;
+    }
 
-  .password-container .toggle-password {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    font-size: 14px;
-    color: #33691e;
-  }
+    .password-container input[type="password"] {
+      width: 100%;
+      padding-right: 40px;
+    }
 
-  #filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 10px auto;
-    max-width: 95%;
-    justify-content: flex-end;
-  }
+    .password-container .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 14px;
+      color: #33691e;
+      user-select: none;
+    }
 
-  #filters select, #filters button { flex: 1 1 150px; }
+    /* Filters */
+    #filters {
+      display: flex;
+      gap: 10px;
+      margin: 15px auto;
+      max-width: 950px;
+      justify-content: flex-end;
+    }
 
-  @media (max-width: 768px) {
-    form, #loginForm { flex-direction: column; }
-    #filters { flex-direction: column; align-items: stretch; }
-    th, td { font-size: 11px; padding: 6px; }
-    button.actionBtn { font-size: 10px; padding: 3px 6px; }
-    #app p button { font-size: 11px; padding: 4px 6px; }
-  }
-</style>
+    #filters select {
+      width: 200px;
+    }
+  </style>
 </head>
 <body>
 
@@ -169,11 +191,12 @@
 
 <!-- MAIN APP -->
 <div id="app" style="display:none;">
-  <p>Logged in as: <span id="currentUser"></span> (<span id="role"></span>)
+  <p>Logged in as: <span id="currentUser"></span> (<span id="role"></span>) 
     <button onclick="logout()">Logout</button>
   </p>
 
-  <div id="adminControls" style="text-align:center; margin-bottom:10px; display:none;">
+  <!-- Admin Only Clear All Button -->
+  <div id="adminControls" style="text-align:center; margin-bottom:15px; display:none;">
     <button onclick="clearAllData()">Admin: Clear All Records</button>
   </div>
 
@@ -221,13 +244,13 @@
     </select>
 
     <label for="pageCTP">Page CTP</label>
-    <input type="time" id="pageCTP">
+    <input type="time" id="pageCTP" placeholder="Page CTP">
 
     <label for="dispatchReceived">Dispatch Received</label>
-    <input type="time" id="dispatchReceived">
+    <input type="time" id="dispatchReceived" placeholder="Dispatch Received">
 
     <label for="departure">Departure</label>
-    <input type="time" id="departure">
+    <input type="time" id="departure" placeholder="Departure">
 
     <input type="text" id="notes" placeholder="Notes">
 
@@ -265,7 +288,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-  // Users & deadlines (same as before)
   const users = {
     "admin": { password: "admin123", role: "admin" },
     "raja": { password: "raja123", role: "Assistant" },
@@ -274,111 +296,245 @@
     "rohitha": { password: "rohitha123", role: "Rohitha" },
     "charith": { password: "charith123", role: "Editor" }
   };
+
   const deadlines = {
-    "SPORTS": { "1st Section": { ctp:"07:00", dispatch:"02:30", departure:"03:15" }, "2nd Section": {ctp:"00:00", dispatch:"02:30", departure:""} },
-    "Racing UK": { "1st Section UK":{ctp:"22:30", dispatch:"01:15", departure:""}, "2nd Section UK":{ctp:"23:30", dispatch:"02:00", departure:""}, "1st Section RST UK":{ctp:"01:50", dispatch:"02:40", departure:""}, "2nd Section RST UK":{ctp:"01:50", dispatch:"02:55", departure:""} },
-    "Racing AUS": { "AUS Publication":{ctp:"22:30", dispatch:"11:00", departure:""}, "AUS RST":{ctp:"21:30", dispatch:"11:00", departure:""} }
+    "SPORTS": {
+      "1st Section": { ctp: "07:00", dispatch: "02:30", departure: "03:15" },
+      "2nd Section": { ctp: "00:00", dispatch: "02:30", departure: "" }
+    },
+    "Racing UK": {
+      "1st Section UK": { ctp: "22:30", dispatch: "01:15", departure: "" },
+      "2nd Section UK": { ctp: "23:30", dispatch: "02:00", departure: "" },
+      "1st Section RST UK": { ctp: "01:50", dispatch: "02:40", departure: "" },
+      "2nd Section RST UK": { ctp: "01:50", dispatch: "02:55", departure: "" }
+    },
+    "Racing AUS": {
+      "AUS Publication": { ctp: "22:30", dispatch: "11:00", departure: "" },
+      "AUS RST": { ctp: "21:30", dispatch: "11:00", departure: "" }
+    }
   };
 
-  let currentUser=null, records=JSON.parse(localStorage.getItem("dispatchRecords")||"[]"), filteredRecords=[];
+  let currentUser = null;
+  let records = JSON.parse(localStorage.getItem("dispatchRecords") || "[]");
+  let filteredRecords = [];
 
-  document.getElementById("loginForm").addEventListener("submit", e=>{
+  document.getElementById("loginForm").addEventListener("submit", function(e){
     e.preventDefault();
-    const u=document.getElementById("username").value, p=document.getElementById("password").value;
-    if(users[u] && users[u].password===p){
-      currentUser={username:u, role:users[u].role};
+    const u = document.getElementById("username").value;
+    const p = document.getElementById("password").value;
+    if(users[u] && users[u].password === p){
+      currentUser = { username: u, role: users[u].role };
       document.getElementById("loginForm").style.display="none";
       document.getElementById("app").style.display="block";
-      document.getElementById("currentUser").textContent=u;
-      document.getElementById("role").textContent=currentUser.role;
-      document.getElementById("adminControls").style.display=currentUser.role==="admin"?"block":"none";
-      document.getElementById("filters").style.display=currentUser.role==="admin"?"flex":"none";
+      document.getElementById("currentUser").textContent = u;
+      document.getElementById("role").textContent = currentUser.role;
+
+      // Show admin controls and filters only for admin
+      document.getElementById("adminControls").style.display = currentUser.role === "admin" ? "block" : "none";
+      document.getElementById("filters").style.display = currentUser.role === "admin" ? "flex" : "none";
+
       renderTable();
-    } else { alert("Invalid credentials"); }
+    } else {
+      alert("Invalid credentials");
+    }
   });
 
-  function logout(){ currentUser=null; document.getElementById("app").style.display="none"; document.getElementById("loginForm").style.display="flex"; document.getElementById("username").value=""; document.getElementById("password").value=""; }
+  function logout(){
+    currentUser = null;
+    document.getElementById("app").style.display="none";
+    document.getElementById("loginForm").style.display="flex";
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+  }
 
-  function parseTimeToDate(timeStr, baseDate){ if(!timeStr) return null; let [h,m]=timeStr.split(":"); let d=new Date(baseDate); d.setHours(+h,+m,0,0); if(+h<6) d.setDate(d.getDate()+1); return d; }
-  function isDelayed(timeStr, deadlineStr, baseDate){ if(!timeStr||!deadlineStr) return "No"; return parseTimeToDate(timeStr, baseDate)>parseTimeToDate(deadlineStr, baseDate)?"Yes":"No"; }
+  function parseTimeToDate(timeStr, baseDate){
+    if(!timeStr) return null;
+    let [h,m] = timeStr.split(":");
+    let d = new Date(baseDate);
+    d.setHours(+h, +m, 0, 0);
+    if(+h < 6) d.setDate(d.getDate() + 1);
+    return d;
+  }
+
+  function isDelayed(timeStr, deadlineStr, baseDate){
+    if(!timeStr || !deadlineStr) return "No";
+    const t = parseTimeToDate(timeStr, baseDate);
+    const dl = parseTimeToDate(deadlineStr, baseDate);
+    return (t > dl) ? "Yes" : "No";
+  }
 
   document.getElementById("dispatchForm").addEventListener("submit", function(e){
     e.preventDefault();
-    const date=document.getElementById("date").value, dept=document.getElementById("department").value, sec=document.getElementById("section").value;
-    const ctp=document.getElementById("pageCTP").value, dispatch=document.getElementById("dispatchReceived").value, departure=document.getElementById("departure").value;
-    const departureAll=document.getElementById("departureAll").checked, dl=deadlines[dept] && deadlines[dept][sec]?deadlines[dept][sec]:{};
-    if(departureAll && departure){ records.forEach(r=>{ if(r.date===date){ r.departure=departure; const dlDept=deadlines[r.department]&&deadlines[r.department][r.section]?deadlines[r.department][r.section]:{}; r.deadlineDeparture=dlDept.departure||""; r.delayDeparture=isDelayed(r.departure,r.deadlineDeparture,r.date); } }); }
-    else{
-      let existing=records.find(r=>r.date===date&&r.department===dept&&r.section===sec);
+    const date = document.getElementById("date").value;
+    const dept = document.getElementById("department").value;
+    const sec = document.getElementById("section").value;
+    const ctp = document.getElementById("pageCTP").value;
+    const dispatch = document.getElementById("dispatchReceived").value;
+    const departure = document.getElementById("departure").value;
+    const departureAll = document.getElementById("departureAll").checked;
+    const dl = deadlines[dept] && deadlines[dept][sec] ? deadlines[dept][sec] : {};
+
+    if(departureAll && departure){
+      records.forEach(r => {
+        if(r.date === date){
+          r.departure = departure;
+          const dlDept = deadlines[r.department] && deadlines[r.department][r.section] ? deadlines[r.department][r.section] : {};
+          r.deadlineDeparture = dlDept.departure || "";
+          r.delayDeparture = isDelayed(r.departure, r.deadlineDeparture, r.date);
+        }
+      });
+    } else {
+      let existing = records.find(r => r.date === date && r.department === dept && r.section === sec);
       if(existing){
-        if(ctp) existing.pageCTP=ctp;
-        if(dispatch) existing.dispatchReceived=dispatch;
-        if(departure) existing.departure=departure;
-        if(document.getElementById("notes").value) existing.notes=document.getElementById("notes").value;
-        existing.deadlineCTP=dl.ctp||""; existing.deadlineDispatch=dl.dispatch||""; existing.deadlineDeparture=dl.departure||"";
-        existing.delayCTP=isDelayed(existing.pageCTP,dl.ctp,date); existing.delayDispatch=isDelayed(existing.dispatchReceived,dl.dispatch,date); existing.delayDeparture=isDelayed(existing.departure,dl.departure,date);
-      } else { records.push({date, department:dept, section:sec, pageCTP:ctp, dispatchReceived:dispatch, departure, notes:document.getElementById("notes").value, deadlineCTP:dl.ctp||"", deadlineDispatch:dl.dispatch||"", deadlineDeparture:dl.departure||"", delayCTP:isDelayed(ctp,dl.ctp,date), delayDispatch:isDelayed(dispatch,dl.dispatch,date), delayDeparture:isDelayed(departure,dl.departure,date), addedBy:currentUser.username}); }
+        if(ctp) existing.pageCTP = ctp;
+        if(dispatch) existing.dispatchReceived = dispatch;
+        if(departure) existing.departure = departure;
+        if(document.getElementById("notes").value) existing.notes = document.getElementById("notes").value;
+        existing.deadlineCTP = dl.ctp || "";
+        existing.deadlineDispatch = dl.dispatch || "";
+        existing.deadlineDeparture = dl.departure || "";
+        existing.delayCTP = isDelayed(existing.pageCTP, dl.ctp, date);
+        existing.delayDispatch = isDelayed(existing.dispatchReceived, dl.dispatch, date);
+        existing.delayDeparture = isDelayed(existing.departure, dl.departure, date);
+      } else {
+        const newRecord = {
+          date: date,
+          department: dept,
+          section: sec,
+          pageCTP: ctp,
+          dispatchReceived: dispatch,
+          departure: departure,
+          notes: document.getElementById("notes").value,
+          deadlineCTP: dl.ctp || "",
+          deadlineDispatch: dl.dispatch || "",
+          deadlineDeparture: dl.departure || "",
+          delayCTP: isDelayed(ctp, dl.ctp, date),
+          delayDispatch: isDelayed(dispatch, dl.dispatch, date),
+          delayDeparture: isDelayed(departure, dl.departure, date),
+          addedBy: currentUser.username
+        };
+        records.push(newRecord);
+      }
     }
 
-
-fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
-  method: "POST",
-  body: JSON.stringify({
-    date,
-    department: dept,
-    section: sec,
-    pageCTP: ctp,
-    dispatchReceived: dispatch,
-    departure,
-    notes: document.getElementById("notes").value,
-    deadlineCTP: dl.ctp || "",
-    deadlineDispatch: dl.dispatch || "",
-    deadlineDeparture: dl.departure || "",
-    delayCTP: isDelayed(ctp, dl.ctp, date),
-    delayDispatch: isDelayed(dispatch, dl.dispatch, date),
-    delayDeparture: isDelayed(departure, dl.departure, date),
-    addedBy: currentUser.username
-  })
-})
-.then(res => res.json())
-.then(data => {
-  console.log(data);
-  renderTable();
-});
-;
-
-
-
-    
-    renderTable(); this.reset();
+    localStorage.setItem("dispatchRecords", JSON.stringify(records));
+    renderTable();
+    this.reset();
   });
 
   function renderTable(){
-    const tbody=document.querySelector("#dispatchTable tbody"); tbody.innerHTML="";
-    const data=filteredRecords.length?filteredRecords:records;
-    data.forEach((rec,idx)=>{
-      const tr=document.createElement("tr");
-      tr.innerHTML=`<td>${rec.date}</td><td>${rec.department}</td><td>${rec.section}</td><td>${rec.pageCTP}</td><td>${rec.dispatchReceived}</td><td>${rec.departure}</td><td>${rec.notes}</td><td>${rec.deadlineCTP}</td><td>${rec.deadlineDispatch}</td><td>${rec.deadlineDeparture}</td><td class="${rec.delayCTP==='Yes'?'delayed':''}">${rec.delayCTP}</td><td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td><td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td><td>${currentUser.role==="admin"?rec.addedBy:""}</td><td></td>`;
-      const actionsCell=tr.querySelector("td:last-child");
-      if(currentUser.role==="admin"){
-        const editBtn=document.createElement("button"); editBtn.textContent="Edit"; editBtn.className="actionBtn"; editBtn.onclick=()=>editRecord(idx);
-        const delBtn=document.createElement("button"); delBtn.textContent="Delete"; delBtn.className="actionBtn delete"; delBtn.onclick=()=>deleteRecord(idx);
-        actionsCell.appendChild(editBtn); actionsCell.appendChild(delBtn);
+    const tbody = document.querySelector("#dispatchTable tbody");
+    tbody.innerHTML = "";
+    const data = filteredRecords.length ? filteredRecords : records;
+    data.forEach((rec, idx) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${rec.date}</td>
+        <td>${rec.department}</td>
+        <td>${rec.section}</td>
+        <td>${rec.pageCTP}</td>
+        <td>${rec.dispatchReceived}</td>
+        <td>${rec.departure}</td>
+        <td>${rec.notes}</td>
+        <td>${rec.deadlineCTP}</td>
+        <td>${rec.deadlineDispatch}</td>
+        <td>${rec.deadlineDeparture}</td>
+        <td class="${rec.delayCTP==='Yes'?'delayed':''}">${rec.delayCTP}</td>
+        <td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td>
+        <td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td>
+        <td>${currentUser.role === "admin" ? rec.addedBy : ""}</td>
+        <td></td>
+      `;
+      const actionsCell = tr.querySelector("td:last-child");
+      if(currentUser.role === "admin"){
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Edit";
+        editBtn.className = "actionBtn";
+        editBtn.onclick = () => editRecord(idx);
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.className = "actionBtn delete";
+        delBtn.onclick = () => deleteRecord(idx);
+        actionsCell.appendChild(editBtn);
+        actionsCell.appendChild(delBtn);
       }
       tbody.appendChild(tr);
     });
   }
 
-  function editRecord(index){ const rec=records[index]; document.getElementById("date").value=rec.date; document.getElementById("department").value=rec.department; document.getElementById("section").value=rec.section; document.getElementById("pageCTP").value=rec.pageCTP; document.getElementById("dispatchReceived").value=rec.dispatchReceived; document.getElementById("departure").value=rec.departure; document.getElementById("notes").value=rec.notes; records.splice(index,1); localStorage.setItem("dispatchRecords", JSON.stringify(records)); renderTable(); }
-  function deleteRecord(index){ if(confirm("Delete this record?")){ records.splice(index,1); localStorage.setItem("dispatchRecords", JSON.stringify(records)); renderTable(); } }
-  function clearAllData(){ if(confirm("Are you sure you want to clear ALL records?")){ records=[]; filteredRecords=[]; localStorage.removeItem("dispatchRecords"); renderTable(); } }
-  document.getElementById("exportExcel").addEventListener("click", function(){ const ws=XLSX.utils.json_to_sheet(records); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Dispatch"); XLSX.writeFile(wb,"dispatch.xlsx"); });
-  function togglePassword(){ const pwd=document.getElementById("password"); pwd.type=pwd.type==="password"?"text":"password"; }
-  function applyFilter(){ const dept=document.getElementById("filterDept").value, sec=document.getElementById("filterSection").value; filteredRecords=records.filter(r=> (dept===""||r.department===dept)&&(sec===""||r.section===sec)); renderTable(); }
-  function clearFilter(){ document.getElementById("filterDept").value=""; document.getElementById("filterSection").value=""; filteredRecords=[]; renderTable(); }
+  function editRecord(index){
+    const rec = records[index];
+    document.getElementById("date").value = rec.date;
+    document.getElementById("department").value = rec.department;
+    document.getElementById("section").value = rec.section;
+    document.getElementById("pageCTP").value = rec.pageCTP;
+    document.getElementById("dispatchReceived").value = rec.dispatchReceived;
+    document.getElementById("departure").value = rec.departure;
+    document.getElementById("notes").value = rec.notes;
+
+    records.splice(index,1);
+    localStorage.setItem("dispatchRecords", JSON.stringify(records));
+    renderTable();
+  }
+
+  function deleteRecord(index){
+    if(confirm("Delete this record?")){
+      records.splice(index,1);
+      localStorage.setItem("dispatchRecords", JSON.stringify(records));
+
+      // Send record to Google Sheet
+fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
+  method: "POST",
+  body: JSON.stringify(records[records.length - 1])  // send latest record
+})
+.then(res => res.json())
+.then(d => console.log("Saved to Google Sheet:", d))
+.catch(err => console.error("Error saving to Sheet:", err));
+
+      renderTable();
+    }
+  }
+
+  function clearAllData(){
+    if(confirm("Are you sure you want to clear ALL records?")){
+      records = [];
+      filteredRecords = [];
+      localStorage.removeItem("dispatchRecords");
+      renderTable();
+    }
+  }
+
+  document.getElementById("exportExcel").addEventListener("click", function(){
+    const ws = XLSX.utils.json_to_sheet(records);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Dispatch");
+    XLSX.writeFile(wb, "dispatch.xlsx");
+  });
+
+  function togglePassword() {
+    const pwd = document.getElementById("password");
+    if(pwd.type === "password") pwd.type = "text";
+    else pwd.type = "password";
+  }
+
+  // FILTER FUNCTIONS
+  function applyFilter(){
+    const dept = document.getElementById("filterDept").value;
+    const sec = document.getElementById("filterSection").value;
+    filteredRecords = records.filter(r => {
+      return (dept === "" || r.department === dept) &&
+             (sec === "" || r.section === sec);
+    });
+    renderTable();
+  }
+
+  function clearFilter(){
+    document.getElementById("filterDept").value = "";
+    document.getElementById("filterSection").value = "";
+    filteredRecords = [];
+    renderTable();
+  }
 </script>
+
 </body>
 </html>
-
-
-
