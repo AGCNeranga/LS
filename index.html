@@ -483,7 +483,7 @@
       localStorage.setItem("dispatchRecords", JSON.stringify(records));
 
       // Send record to Google Sheet
-fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
+fetch("https://script.google.com/macros/s/AKfycbwT-Q9EbYQw4TGttlXLN4dbuWu-cIXilgpfkkX8tf56is1wriFltNmvXyQ9IdKZQp7V/exec", {
   method: "POST",
   body: JSON.stringify(records[records.length - 1])  // send latest record
 })
@@ -538,3 +538,4 @@ fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa3
 
 </body>
 </html>
+
