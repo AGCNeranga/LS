@@ -321,7 +321,7 @@
     }
 
 
-  fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
+fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
   method: "POST",
   body: JSON.stringify({
     date,
@@ -341,10 +341,11 @@
   })
 })
 .then(res => res.json())
-.then(data => { console.log("Saved:", data); renderTable(); })
-.catch(err => console.error(err));
-
-this.reset();
+.then(data => {
+  console.log(data);
+  renderTable();
+});
+;
 
 
 
@@ -378,5 +379,6 @@ this.reset();
 </script>
 </body>
 </html>
+
 
 
