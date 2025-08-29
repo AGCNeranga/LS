@@ -57,24 +57,16 @@ button.actionBtn.delete { background:#ef5350; }
     <button onclick="clearAllData()">Admin: Clear All Records</button>
   </div>
 
+  <!-- Filters -->
   <div id="filters" style="display:none;">
     <select id="filterDept">
       <option value="">All Departments</option>
       <option value="SPORTS">SPORTS</option>
       <option value="Racing UK">Racing UK</option>
       <option value="Racing AUS">Racing AUS</option>
+      <option value="RST UK">RST UK</option>
     </select>
-    <select id="filterSection">
-      <option value="">All Sections</option>
-      <option value="1st Section">1st Section Sport Publication</option>
-      <option value="2nd Section">2nd Section Sport Publication</option>
-      <option value="1st Section UK">1st Section UK Publication</option>
-      <option value="2nd Section UK">2nd Section UK Publication</option>
-      <option value="1st Section RST UK">1st Section RST UK Publication</option>
-      <option value="2nd Section RST UK">2nd Section RST UK Publication</option>
-      <option value="AUS Publication">AUS Publication</option>
-      <option value="AUS RST">AUS RST Publication</option>
-    </select>
+    <select id="filterSection"><option value="">All Sections</option></select>
     <button onclick="applyFilter()">Filter</button>
     <button onclick="clearFilter()">Clear Filter</button>
   </div>
@@ -85,34 +77,25 @@ button.actionBtn.delete { background:#ef5350; }
       <option value="">Select Department</option>
       <option value="SPORTS">SPORTS</option>
       <option value="Racing UK">Racing UK</option>
+      <option value="RST UK">RST UK</option>
       <option value="Racing AUS">Racing AUS</option>
     </select>
-    <select id="section">
-      <option value="">Select Section</option>
-      <option value="1st Section" data-department="SPORTS">1st Section Sport Publication</option>
-      <option value="2nd Section" data-department="SPORTS">2nd Section Sport Publication</option>
-      <option value="1st Section UK" data-department="Racing UK">1st Section UK Publication</option>
-      <option value="2nd Section UK" data-department="Racing UK">2nd Section UK Publication</option>
-      <option value="1st Section RST UK" data-department="Racing UK">1st Section RST UK Publication</option>
-      <option value="2nd Section RST UK" data-department="Racing UK">2nd Section RST UK Publication</option>
-      <option value="AUS Publication" data-department="Racing AUS">AUS Publication</option>
-      <option value="AUS RST" data-department="Racing AUS">AUS RST Publication</option>
-    </select>
+    <select id="section" required></select>
+
     <label for="pageCTP">Page CTP</label><input type="time" id="pageCTP">
     <label for="dispatchReceived">Dispatch Received</label><input type="time" id="dispatchReceived">
     <label for="departure">Departure</label><input type="time" id="departure">
     <input type="text" id="notes" placeholder="Notes">
-    <label style="display:flex; align-items:center; gap:5px;"><input type="checkbox" id="departureAll"> Departure All</label>
     <button type="submit">Add Record</button>
-    <button type="button" id="exportExcel">Export Excel</button>
   </form>
 
   <table id="dispatchTable">
     <thead>
       <tr>
-        <th>Date</th><th>Department</th><th>Section</th><th>Page CTP</th><th>Dispatch Received</th><th>Departure</th><th>Notes</th>
+        <th>Date</th><th>Department</th><th>Section</th>
         <th>Deadline (CTP)</th><th>Deadline (Dispatch)</th><th>Deadline (Departure)</th>
-        <th>Delay (CTP)</th><th>Delay (Dispatch)</th><th>Delay (Departure)</th><th>User</th><th>Actions</th>
+        <th>Delay (CTP)</th><th>Delay (Dispatch)</th><th>Delay (Departure)</th>
+        <th>Notes</th><th>User</th><th>Actions</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -123,7 +106,6 @@ button.actionBtn.delete { background:#ef5350; }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-import * as XLSX from "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -135,12 +117,12 @@ const firebaseConfig = {
   appId: "1:984217204226:web:ab6efa24a54345fc57d91b",
   measurementId: "G-4N950SN8V9"
 };
-
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const recordsCol = collection(db, "dispatchRecords");
 
+// Users
 const users = {
   "admin":{password:"admin123",role:"admin"},
   "raja":{password:"raja123",role:"Assistant"},
@@ -150,15 +132,46 @@ const users = {
   "charith":{password:"charith123",role:"Editor"}
 };
 
+// Company deadlines
 const deadlines = {
-  "SPORTS": { "1st Section": { ctp:"07:00", dispatch:"02:30", departure:"03:15" }, "2nd Section": {ctp:"00:00", dispatch:"02:30", departure:""} },
-  "Racing UK": { "1st Section UK":{ctp:"22:30", dispatch:"01:15", departure:""}, "2nd Section UK":{ctp:"23:30", dispatch:"02:00", departure:""}, "1st Section RST UK":{ctp:"01:50", dispatch:"02:40", departure:""}, "2nd Section RST UK":{ctp:"01:50", dispatch:"02:55", departure:""} },
-  "Racing AUS": { "AUS Publication":{ctp:"22:30", dispatch:"11:00", departure:""}, "AUS RST":{ctp:"21:30", dispatch:"11:00", departure:""} }
+  "SPORTS": {
+    "1st Section SPORTS": { ctp: "19:00", dispatch: "02:30", departure: "03:15" },
+    "2nd Section SPORTS": { ctp: "00:00", dispatch: "02:30", departure: "03:15" }
+  },
+  "Racing UK": {
+    "1st Section UK": { ctp: "22:30", dispatch: "01:15", departure: "03:15" },
+    "2nd Section UK": { ctp: "23:30", dispatch: "02:00", departure: "03:15" }
+  },
+  "RST UK": {
+    "1st Section RST UK": { ctp: "01:50", dispatch: "02:40", departure: "03:15" },
+    "2nd Section RST UK": { ctp: "01:50", dispatch: "02:55", departure: "03:15" }
+  },
+  "Racing AUS": {
+    "AUS Publication": { ctp: "22:30", dispatch: "11:00", departure: "03:15" },
+    "AUS RST": { ctp: "21:00", dispatch: "11:00", departure: "03:15" }
+  }
 };
 
-let currentUser=null, records=[], filteredRecords=[];
+let currentUser=null, records=[];
 
-// LOGIN
+// Populate section select
+function updateSections(deptSelectId, sectionSelectId){
+  const dept=document.getElementById(deptSelectId).value;
+  const secSelect=document.getElementById(sectionSelectId);
+  secSelect.innerHTML="";
+  if(deadlines[dept]){
+    Object.keys(deadlines[dept]).forEach(s=>{
+      let opt=document.createElement("option");
+      opt.value=s; opt.textContent=s;
+      secSelect.appendChild(opt);
+    });
+  }
+}
+
+document.getElementById("department").addEventListener("change",()=>updateSections("department","section"));
+document.getElementById("filterDept").addEventListener("change",()=>updateSections("filterDept","filterSection"));
+
+// Login
 document.getElementById("loginForm").addEventListener("submit", async e=>{
   e.preventDefault();
   const u=document.getElementById("username").value, p=document.getElementById("password").value;
@@ -170,34 +183,40 @@ document.getElementById("loginForm").addEventListener("submit", async e=>{
     document.getElementById("role").textContent=currentUser.role;
     document.getElementById("adminControls").style.display=currentUser.role==="admin"?"block":"none";
     document.getElementById("filters").style.display=currentUser.role==="admin"?"flex":"none";
-    await loadRecordsFromFirebase();
+    await loadRecords();
   } else { alert("Invalid credentials"); }
 });
 
-function logout(){ currentUser=null; document.getElementById("app").style.display="none"; document.getElementById("loginForm").style.display="flex"; document.getElementById("username").value=""; document.getElementById("password").value=""; }
+function logout(){
+  currentUser=null;
+  document.getElementById("app").style.display="none";
+  document.getElementById("loginForm").style.display="flex";
+  document.getElementById("username").value="";
+  document.getElementById("password").value="";
+}
 function togglePassword(){ const pwd=document.getElementById("password"); pwd.type=pwd.type==="password"?"text":"password"; }
 
 function parseTimeToDate(timeStr, baseDate){
   if(!timeStr) return null;
-  let [h,m] = timeStr.split(":");
-  let d = new Date(baseDate);
+  let [h,m]=timeStr.split(":");
+  let d=new Date(baseDate);
   d.setHours(+h,+m,0,0);
-  if(+h < 6) d.setDate(d.getDate()+1);
+  if(+h<6) d.setDate(d.getDate()+1); // times after midnight
   return d;
 }
-function isDelayed(timeStr, deadlineStr, baseDate){
-  if(!timeStr || !deadlineStr) return "No";
-  return parseTimeToDate(timeStr, baseDate) > parseTimeToDate(deadlineStr, baseDate) ? "Yes" : "No";
+function isDelayed(actual, deadline, baseDate){
+  if(!actual || !deadline) return "No";
+  return parseTimeToDate(actual, baseDate) > parseTimeToDate(deadline, baseDate) ? "Yes" : "No";
 }
 
-// LOAD FIREBASE RECORDS
-async function loadRecordsFromFirebase(){
+// Load records
+async function loadRecords(){
   const snap = await getDocs(recordsCol);
   records = snap.docs.map(d=>({ ...d.data(), firebaseId:d.id }));
   renderTable();
 }
 
-// ADD / UPDATE RECORD
+// Add record
 document.getElementById("dispatchForm").addEventListener("submit", async function(e){
   e.preventDefault();
   const date=document.getElementById("date").value;
@@ -208,54 +227,50 @@ document.getElementById("dispatchForm").addEventListener("submit", async functio
   const departure=document.getElementById("departure").value;
   const notes=document.getElementById("notes").value;
 
-  if(!date||!dept||!sec){ alert("Fill Date, Department, Section"); return; }
+  if(!date || !dept || !sec){ alert("Fill Date, Department, Section"); return; }
 
-  let dl = deadlines[dept] && deadlines[dept][sec] ? deadlines[dept][sec] : {};
+  const deadlineCTP = deadlines[dept][sec].ctp;
+  const deadlineDispatch = deadlines[dept][sec].dispatch;
+  const deadlineDeparture = deadlines[dept][sec].departure;
 
-  const recordData = {
-    date,
-    department: dept,
-    section: sec,
-    pageCTP: ctp,
-    dispatchReceived: dispatch,
-    departure,
-    notes,
-    addedBy: currentUser.username,
-    deadlineCTP: dl.ctp || "",
-    deadlineDispatch: dl.dispatch || "",
-    deadlineDeparture: dl.departure || "",
-    delayCTP: isDelayed(ctp, dl.ctp, date),
-    delayDispatch: isDelayed(dispatch, dl.dispatch, date),
-    delayDeparture: isDelayed(departure, dl.departure, date)
-  };
+  const delayCTP = isDelayed(ctp, deadlineCTP, date);
+  const delayDispatch = isDelayed(dispatch, deadlineDispatch, date);
+  const delayDeparture = isDelayed(departure, deadlineDeparture, date);
 
-  let existing=records.find(r=>r.date===date && r.department===dept && r.section===sec);
+  let existing = records.find(r=>r.date===date && r.department===dept && r.section===sec);
 
   if(existing){
     const docRef=doc(db,"dispatchRecords",existing.firebaseId);
-    await updateDoc(docRef, recordData);
+    await updateDoc(docRef,{date,department:dept,section:sec,pageCTP:ctp,dispatchReceived:dispatch,departure,notes,addedBy:currentUser.username,deadlineCTP,deadlineDispatch,deadlineDeparture,delayCTP,delayDispatch,delayDeparture});
   } else {
-    await addDoc(recordsCol, recordData);
+    await addDoc(recordsCol,{date,department:dept,section:sec,pageCTP:ctp,dispatchReceived:dispatch,departure,notes,addedBy:currentUser.username,deadlineCTP,deadlineDispatch,deadlineDeparture,delayCTP,delayDispatch,delayDeparture});
   }
 
-  await loadRecordsFromFirebase();
+  await loadRecords();
   this.reset();
 });
 
-// RENDER TABLE
+// Render table
 function renderTable(){
   const tbody=document.querySelector("#dispatchTable tbody"); tbody.innerHTML="";
-  const data=filteredRecords.length?filteredRecords:records;
-  data.forEach((rec,idx)=>{
+  records.forEach((rec,idx)=>{
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${rec.date}</td><td>${rec.department}</td><td>${rec.section}</td><td>${rec.pageCTP}</td><td>${rec.dispatchReceived}</td><td>${rec.departure}</td><td>${rec.notes}</td>
-    <td>${rec.deadlineCTP||""}</td><td>${rec.deadlineDispatch||""}</td><td>${rec.deadlineDeparture||""}</td>
-    <td class="${rec.delayCTP==='Yes'?'delayed':''}">${rec.delayCTP||""}</td>
-    <td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch||""}</td>
-    <td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture||""}</td>
-    <td>${currentUser.role==="admin"?rec.addedBy:""}</td><td></td>`;
-    const actionsCell=tr.querySelector("td:last-child");
+    tr.innerHTML=`
+      <td>${rec.date}</td>
+      <td>${rec.department}</td>
+      <td>${rec.section}</td>
+      <td>${rec.deadlineCTP}</td>
+      <td>${rec.deadlineDispatch}</td>
+      <td>${rec.deadlineDeparture}</td>
+      <td class="${rec.delayCTP==='Yes'?'delayed':''}">${rec.delayCTP}</td>
+      <td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td>
+      <td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td>
+      <td>${rec.notes}</td>
+      <td>${rec.addedBy}</td>
+      <td></td>
+    `;
     if(currentUser.role==="admin"){
+      const actionsCell=tr.querySelector("td:last-child");
       const editBtn=document.createElement("button"); editBtn.textContent="Edit"; editBtn.className="actionBtn"; editBtn.onclick=()=>editRecord(idx);
       const delBtn=document.createElement("button"); delBtn.textContent="Delete"; delBtn.className="actionBtn delete"; delBtn.onclick=()=>deleteRecord(idx);
       actionsCell.appendChild(editBtn); actionsCell.appendChild(delBtn);
@@ -264,44 +279,62 @@ function renderTable(){
   });
 }
 
-// EDIT / DELETE
+// Edit/Delete
 function editRecord(index){
   const rec=records[index];
   document.getElementById("date").value=rec.date;
   document.getElementById("department").value=rec.department;
+  updateSections("department","section");
   document.getElementById("section").value=rec.section;
   document.getElementById("pageCTP").value=rec.pageCTP;
   document.getElementById("dispatchReceived").value=rec.dispatchReceived;
   document.getElementById("departure").value=rec.departure;
   document.getElementById("notes").value=rec.notes;
-  deleteRecordFirebase(index,true); // remove but keep editing
+  deleteRecordFirebase(index,true);
 }
-async function deleteRecordFirebase(index,keepEditing=false){
-  if(keepEditing || confirm("Delete this record?")){
+async function deleteRecordFirebase(index,keep=false){
+  if(keep || confirm("Delete this record?")){
     const r=records[index];
     await deleteDoc(doc(db,"dispatchRecords",r.firebaseId));
-    await loadRecordsFromFirebase();
+    await loadRecords();
   }
 }
 function deleteRecord(index){ deleteRecordFirebase(index,false); }
+
+// Admin clear all
 async function clearAllData(){
   if(confirm("Are you sure you want to clear ALL records?")){
     for(const r of records){ await deleteDoc(doc(db,"dispatchRecords",r.firebaseId)); }
-    await loadRecordsFromFirebase();
+    await loadRecords();
   }
 }
 
-// EXPORT EXCEL
-document.getElementById("exportExcel").addEventListener("click", function(){
-  const ws=XLSX.utils.json_to_sheet(records);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,"Dispatch");
-  XLSX.writeFile(wb,"dispatch.xlsx");
-});
-
-// FILTER
-function applyFilter(){ const dept=document.getElementById("filterDept").value, sec=document.getElementById("filterSection").value; filteredRecords=records.filter(r=>(dept===""||r.department===dept)&&(sec===""||r.section===sec)); renderTable(); }
-function clearFilter(){ document.getElementById("filterDept").value=""; document.getElementById("filterSection").value=""; filteredRecords=[]; renderTable(); }
+// Filter
+function applyFilter(){
+  const dept=document.getElementById("filterDept").value;
+  const sec=document.getElementById("filterSection").value;
+  const filtered = records.filter(r=>(!dept||r.department===dept)&&(!sec||r.section===sec));
+  const tbody=document.querySelector("#dispatchTable tbody"); tbody.innerHTML="";
+  filtered.forEach((rec,idx)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td>${rec.date}</td>
+      <td>${rec.department}</td>
+      <td>${rec.section}</td>
+      <td>${rec.deadlineCTP}</td>
+      <td>${rec.deadlineDispatch}</td>
+      <td>${rec.deadlineDeparture}</td>
+      <td class="${rec.delayCTP==='Yes'?'delayed':''}">${rec.delayCTP}</td>
+      <td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td>
+      <td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td>
+      <td>${rec.notes}</td>
+      <td>${rec.addedBy}</td>
+      <td></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function clearFilter(){ document.getElementById("filterDept").value=""; document.getElementById("filterSection").innerHTML=""; renderTable(); }
 
 </script>
 </body>
