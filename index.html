@@ -319,12 +319,8 @@
         existing.delayCTP=isDelayed(existing.pageCTP,dl.ctp,date); existing.delayDispatch=isDelayed(existing.dispatchReceived,dl.dispatch,date); existing.delayDeparture=isDelayed(existing.departure,dl.departure,date);
       } else { records.push({date, department:dept, section:sec, pageCTP:ctp, dispatchReceived:dispatch, departure, notes:document.getElementById("notes").value, deadlineCTP:dl.ctp||"", deadlineDispatch:dl.dispatch||"", deadlineDeparture:dl.departure||"", delayCTP:isDelayed(ctp,dl.ctp,date), delayDispatch:isDelayed(dispatch,dl.dispatch,date), delayDeparture:isDelayed(departure,dl.departure,date), addedBy:currentUser.username}); }
     }
-    const notesValue = document.getElementById("notes").value;
 
-// Prepare data to send
-const dl = deadlines[dept] && deadlines[dept][sec] ? deadlines[dept][sec] : {};
-
-const recordData = {
+    const recordData = {
   date: date,
   department: dept,
   section: sec,
@@ -341,18 +337,21 @@ const recordData = {
   addedBy: currentUser.username
 };
 
-fetch("https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
+fetch("
+https://script.google.com/macros/s/AKfycbwuupEJVv08hoqg9F-xPFfUA8JlXMrFa36EnpEmcDZD7GRMQBrC0csgn5ylu308ACwLig/exec", {
   method: "POST",
   body: JSON.stringify(recordData)
 })
 .then(res => res.json())
 .then(data => {
-  console.log("Record saved:", data);
-  renderTable();  // update the table on web immediately
+  console.log("Saved to Google Sheets:", data);
+  renderTable();  // update table in web page
 })
 .catch(err => console.error(err));
 
-localStorage.setItem("dispatchRecords", JSON.stringify(records));
+this.reset();
+
+    
     renderTable(); this.reset();
   });
 
@@ -382,6 +381,3 @@ localStorage.setItem("dispatchRecords", JSON.stringify(records));
 </script>
 </body>
 </html>
-
-
-
