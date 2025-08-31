@@ -122,9 +122,8 @@
 <!-- ✅ Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // 🔑 your config
   const firebaseConfig = {
     apiKey: "AIzaSyDxE1d9nCYUTjmipUJ3zPSvtaFwypkk0bI",
     authDomain: "dispatchwebapp-66959.firebaseapp.com",
@@ -137,22 +136,30 @@
   const appFB = initializeApp(firebaseConfig);
   const db = getFirestore(appFB);
 
-  // expose db globally
   window.db = db;
   window.fCollection = collection(db, "dispatchRecords");
   window.fAddDoc = addDoc;
-  window.fGetDocs = getDocs;
-  window.fUpdateDoc = updateDoc;
-  window.fDeleteDoc = deleteDoc;
-  window.fDoc = doc;
   window.fSetDoc = setDoc;
+  window.fDoc = doc;
+
 </script>
 
 <script>
-/* --- your full JS code remains unchanged --- */
-/* just after any localStorage change we also sync with Firestore */
+let records = JSON.parse(localStorage.getItem("dispatchRecords") || "[]");
 
-async function syncToFirebase(){
+function renderTable(){
+  const tbody = document.querySelector("#dispatchTable tbody");
+  tbody.innerHTML = "";
+  records.forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.date}</td><td>${r.department}</td><td>${r.section}</td><td>${r.pageCTP||""}</td><td>${r.dispatchReceived||""}</td><td>${r.departure||""}</td><td>${r.notes||""}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// save both localStorage & Firebase
+async function saveAll(){
+  localStorage.setItem("dispatchRecords", JSON.stringify(records));
   for(let rec of records){
     if(!rec.id){
       let ref = await fAddDoc(fCollection, rec);
@@ -162,23 +169,40 @@ async function syncToFirebase(){
     }
   }
 }
+
+// form submit
+document.getElementById("dispatchForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const rec = {
+    date: document.getElementById("date").value,
+    department: document.getElementById("department").value,
+    section: document.getElementById("section").value,
+    pageCTP: document.getElementById("pageCTP").value,
+    dispatchReceived: document.getElementById("dispatchReceived").value,
+    departure: document.getElementById("departure").value,
+    notes: document.getElementById("notes").value,
+    departureAll: document.getElementById("departureAll").checked
+  };
+  records.push(rec);
+  await saveAll();
+  renderTable();
+  e.target.reset();
+});
+
+// load records from Firebase
 async function loadFromFirebase(){
-  const snap = await fGetDocs(fCollection);
+  const snap = await getDocs(fCollection);
   records = [];
-  snap.forEach(d=>records.push({...d.data(),id:d.id}));
-  localStorage.setItem("dispatchRecords",JSON.stringify(records));
+  snap.forEach(d=>{
+    records.push({...d.data(),id:d.id});
+  });
+  localStorage.setItem("dispatchRecords", JSON.stringify(records));
   renderTable();
 }
 
-/* patch localStorage save lines */
-function saveAll(){
-  localStorage.setItem("dispatchRecords", JSON.stringify(records));
-  syncToFirebase();
-}
-
-/* replace localStorage.setItem("dispatchRecords",...) in your code with saveAll() */
-/* Example: in add/edit/delete/clear just call saveAll() */
-
+// init
+renderTable();
+loadFromFirebase();
 </script>
 </body>
 </html>
