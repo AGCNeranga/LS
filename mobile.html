@@ -6,7 +6,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  /* ... Your same styles unchanged ... */
+  /* --- Keep all your original CSS --- */
+  body { font-family: 'Roboto', sans-serif; background: linear-gradient(135deg, #f0fff0, #fffde7); margin: 0; padding: 0; }
+  h2 { text-align:center;color:#2e7d32;margin-top:20px;font-weight:700;}
+  form,#loginForm{background:rgba(255,255,255,0.85);padding:20px;border-radius:20px;box-shadow:0 12px 25px rgba(0,0,0,0.15);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;margin:15px auto;max-width:95%;backdrop-filter:blur(12px);transition:transform 0.3s;flex-direction:row;}
+  form:hover,#loginForm:hover{transform:translateY(-3px);}
+  input,select,button{padding:10px;border-radius:12px;border:1px solid #a5d6a7;font-size:14px;transition:0.3s;flex:1 1 200px;min-width:120px;}
+  input:focus,select:focus{outline:none;border-color:#66bb6a;box-shadow:0 0 8px rgba(102,187,106,0.4);}
+  button{background:#66bb6a;color:white;border:none;cursor:pointer;font-weight:500;transition:0.3s;}
+  button:hover{background:#2e7d32;}
+  label{width:100%;font-weight:500;color:#33691e;margin-top:5px;font-size:13px;}
+  #dispatchTable{width:100%;margin:15px auto;border-collapse:collapse;background:rgba(255,255,255,0.85);border-radius:20px;overflow-x:auto;display:block;box-shadow:0 12px 25px rgba(0,0,0,0.1);backdrop-filter:blur(10px);}
+  th,td{padding:10px;text-align:left;border-bottom:1px solid #c5e1a5;font-size:12px;color:#33691e;white-space:nowrap;}
+  th{background:#aed581;color:#1b5e20;font-weight:600;}
+  tr:hover{background:rgba(205,220,57,0.2);}
+  button.actionBtn{background:#9ccc65;margin-right:5px;font-size:11px;padding:4px 8px;}
+  button.actionBtn.delete{background:#ef5350;}
+  .delayed{color:red;font-weight:bold;}
+  #app p{text-align:center;font-weight:500;color:#2e7d32;}
+  #app p button{background:#33691e;padding:5px 8px;margin-left:5px;border-radius:8px;font-size:12px;}
+  #app p button:hover{background:#66bb6a;}
+  .password-container{position:relative;width:100%;}
+  .password-container input[type="password"]{width:100%;padding-right:35px;}
+  .password-container .toggle-password{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:14px;color:#33691e;}
+  #filters{display:flex;flex-wrap:wrap;gap:10px;margin:10px auto;max-width:95%;justify-content:flex-end;}
+  #filters select,#filters button{flex:1 1 150px;}
+  @media(max-width:768px){form,#loginForm{flex-direction:column;}#filters{flex-direction:column;align-items:stretch;}th,td{font-size:11px;padding:6px;}button.actionBtn{font-size:10px;padding:3px 6px;}#app p button{font-size:11px;padding:4px 6px;}}
 </style>
 </head>
 <body>
@@ -119,74 +144,78 @@
   </table>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-<!-- Firebase SDK -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  // --- Firebase Realtime Database --- //
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getDatabase, ref, push, get, set, remove } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDxE1d9nCYUTjmipUJ3zPSvtaFwypkk0bI",
-  authDomain: "dispatchwebapp-66959.firebaseapp.com",
-  projectId: "dispatchwebapp-66959",
-  storageBucket: "dispatchwebapp-66959.appspot.com",
-  messagingSenderId: "984217204226",
-  appId: "1:984217204226:web:ab6efa24a54345fc57d91b"
-};
+  // --- Replace with your Firebase project config --- //
+  const firebaseConfig = {
+    apiKey: "AIzaSyDxE1d9nCYUTjmipUJ3zPSvtaFwypkk0bI",
+    authDomain: "dispatchwebapp-66959.firebaseapp.com",
+    databaseURL: "https://dispatchwebapp-66959-default-rtdb.firebaseio.com/",
+    projectId: "dispatchwebapp-66959",
+    storageBucket: "dispatchwebapp-66959.appspot.com",
+    messagingSenderId: "984217204226",
+    appId: "1:984217204226:web:ab6efa24a54345fc57d91b"
+  };
 
-const appFB = initializeApp(firebaseConfig);
-const db = getFirestore(appFB);
-const fCollection = collection(db, "dispatchRecords");
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-// expose functions globally
-window.fAddDoc = addDoc;
-window.fSetDoc = setDoc;
-window.fDoc = doc;
-window.db = db;
-window.fCollection = fCollection;
+  // --- Users & deadlines --- //
+  const users = {
+    "admin": { password: "admin123", role: "admin" },
+    "raja": { password: "raja123", role: "Assistant" },
+    "akila": { password: "akila123", role: "Akila" },
+    "uchitha": { password: "uchitha123", role: "Manager" },
+    "rohitha": { password: "rohitha123", role: "Rohitha" },
+    "charith": { password: "charith123", role: "Editor" }
+  };
+  const deadlines = {
+    "SPORTS": { "1st Section": { ctp:"07:00", dispatch:"02:30", departure:"03:15" }, "2nd Section": {ctp:"00:00", dispatch:"02:30", departure:""} },
+    "Racing UK": { "1st Section UK":{ctp:"22:30", dispatch:"01:15", departure:""}, "2nd Section UK":{ctp:"23:30", dispatch:"02:00", departure:""}, "1st Section RST UK":{ctp:"01:50", dispatch:"02:40", departure:""}, "2nd Section RST UK":{ctp:"01:50", dispatch:"02:55", departure:""} },
+    "Racing AUS": { "AUS Publication":{ctp:"22:30", dispatch:"11:00", departure:""}, "AUS RST":{ctp:"21:30", dispatch:"11:00", departure:""} }
+  };
+  const universalDepartureDeadline = "15:15";
 
-// Sync all records to Firebase
-async function syncAllToFirebase(){
-  for(let rec of records){
-    if(!rec.id){
-      let ref = await addDoc(fCollection, rec);
-      rec.id = ref.id;
-    } else {
-      await setDoc(doc(db,"dispatchRecords",rec.id), rec);
-    }
+  let currentUser=null, records=[], filteredRecords=[];
+
+  // --- Login --- //
+  document.getElementById("loginForm").addEventListener("submit", async e=>{
+    e.preventDefault();
+    const u=document.getElementById("username").value, p=document.getElementById("password").value;
+    if(users[u] && users[u].password===p){
+      currentUser={username:u, role:users[u].role};
+      document.getElementById("loginForm").style.display="none";
+      document.getElementById("app").style.display="block";
+      document.getElementById("currentUser").textContent=u;
+      document.getElementById("role").textContent=currentUser.role;
+      document.getElementById("adminControls").style.display=currentUser.role==="admin"?"block":"none";
+      document.getElementById("filters").style.display=currentUser.role==="admin"?"flex":"none";
+      await loadRecords();
+    } else alert("Invalid credentials");
+  });
+
+  function logout(){ currentUser=null; document.getElementById("app").style.display="none"; document.getElementById("loginForm").style.display="flex"; document.getElementById("username").value=""; document.getElementById("password").value=""; }
+
+  // --- Load records from Firebase --- //
+  async function loadRecords(){
+    const snapshot = await get(ref(db, 'dispatchRecords'));
+    records = snapshot.exists() ? Object.values(snapshot.val()) : [];
+    renderTable();
   }
-}
 
-// Load existing records from Firebase
-async function loadFromFirebase(){
-  const snap = await getDocs(fCollection);
-  records = [];
-  snap.forEach(d=>records.push({...d.data(), id:d.id}));
-  localStorage.setItem("dispatchRecords", JSON.stringify(records));
-  renderTable();
-}
+  function parseTimeToDate(timeStr, baseDate){ if(!timeStr) return null; let [h,m]=timeStr.split(":"); let d=new Date(baseDate); d.setHours(+h,+m,0,0); if(+h<6) d.setDate(d.getDate()+1); return d; }
+  function isDelayed(timeStr, deadlineStr, baseDate){ if(!timeStr||!deadlineStr) return "No"; return parseTimeToDate(timeStr, baseDate)>parseTimeToDate(deadlineStr, baseDate)?"Yes":"No"; }
 
-loadFromFirebase();
-</script>
-
-<script>
-  // ... All your previous JS code remains exactly the same ...
-  // Just replace localStorage.setItem(...) lines with saveAll() calls
-  function saveAll(){
-    localStorage.setItem("dispatchRecords", JSON.stringify(records));
-    syncAllToFirebase();
-  }
-
-  // Example: In add/edit/delete/clearAll
-  // replace localStorage.setItem(...) with saveAll()
-  // In dispatchForm submit:
-  document.getElementById("dispatchForm").addEventListener("submit", function(e){
+  // --- Add / update record --- //
+  document.getElementById("dispatchForm").addEventListener("submit", async function(e){
     e.preventDefault();
     const date=document.getElementById("date").value, dept=document.getElementById("department").value, sec=document.getElementById("section").value;
     const ctp=document.getElementById("pageCTP").value, dispatch=document.getElementById("dispatchReceived").value, departure=document.getElementById("departure").value;
     const departureAll=document.getElementById("departureAll").checked, dl=deadlines[dept] && deadlines[dept][sec]?deadlines[dept][sec]:{};
-
+    
     if(departureAll && departure){
       records.forEach(r=>{
         if(r.date===date){
@@ -210,21 +239,79 @@ loadFromFirebase();
         existing.delayDeparture=isDelayed(existing.departure,universalDepartureDeadline,date);
       } else {
         records.push({
-          date, department:dept, section:sec, pageCTP:ctp, dispatchReceived:dispatch,
-          departure, notes:document.getElementById("notes").value, deadlineCTP:dl.ctp||"",
-          deadlineDispatch:dl.dispatch||"", deadlineDeparture:universalDepartureDeadline,
-          delayCTP:isDelayed(ctp,dl.ctp,date), delayDispatch:isDelayed(dispatch,dl.dispatch,date),
-          delayDeparture:isDelayed(departure,universalDepartureDeadline,date), addedBy:currentUser.username
+          date, department:dept, section:sec, pageCTP:ctp, dispatchReceived:dispatch, departure, notes:document.getElementById("notes").value,
+          deadlineCTP:dl.ctp||"", deadlineDispatch:dl.dispatch||"", deadlineDeparture:universalDepartureDeadline,
+          delayCTP:isDelayed(ctp,dl.ctp,date), delayDispatch:isDelayed(dispatch,dl.dispatch,date), delayDeparture:isDelayed(departure,universalDepartureDeadline,date),
+          addedBy:currentUser.username
         });
       }
     }
 
-    saveAll(); // <-- replaces localStorage.setItem
+    // --- Save entire records array to Firebase --- //
+    await set(ref(db, 'dispatchRecords'), records);
     renderTable(); this.reset();
   });
 
-  // Similarly, in editRecord, deleteRecord, clearAllData replace localStorage.setItem with saveAll()
-</script>
+  function renderTable(){
+    const tbody=document.querySelector("#dispatchTable tbody"); tbody.innerHTML="";
+    const data=filteredRecords.length?filteredRecords:records;
+    data.forEach((rec,idx)=>{
+      if(!rec.deadlineDeparture) rec.deadlineDeparture=universalDepartureDeadline;
+      if(rec.delayDeparture===""||typeof rec.delayDeparture==="undefined") rec.delayDeparture=isDelayed(rec.departure, universalDepartureDeadline, rec.date);
 
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td>${rec.date}</td><td>${rec.department}</td><td>${rec.section}</td><td>${rec.pageCTP}</td><td>${rec.dispatchReceived}</td><td>${rec.departure}</td><td>${rec.notes}</td><td>${rec.deadlineCTP}</td><td>${rec.deadlineDispatch}</td><td>${rec.deadlineDeparture}</td><td class="${rec.delayCTP==='Yes'?'delayed':''}">${rec.delayCTP}</td><td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td><td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td><td>${currentUser.role==="admin"?rec.addedBy:""}</td><td></td>`;
+      const actionsCell=tr.querySelector("td:last-child");
+      if(currentUser.role==="admin"){
+        const editBtn=document.createElement("button"); editBtn.textContent="Edit"; editBtn.className="actionBtn"; editBtn.onclick=()=>editRecord(idx);
+        const delBtn=document.createElement("button"); delBtn.textContent="Delete"; delBtn.className="actionBtn delete"; delBtn.onclick=()=>deleteRecord(idx);
+        actionsCell.appendChild(editBtn); actionsCell.appendChild(delBtn);
+      }
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function editRecord(index){
+    const rec=records[index];
+    document.getElementById("date").value=rec.date;
+    document.getElementById("department").value=rec.department;
+    document.getElementById("section").value=rec.section;
+    document.getElementById("pageCTP").value=rec.pageCTP;
+    document.getElementById("dispatchReceived").value=rec.dispatchReceived;
+    document.getElementById("departure").value=rec.departure;
+    document.getElementById("notes").value=rec.notes;
+    records.splice(index,1);
+    await set(ref(db, 'dispatchRecords'), records);
+    renderTable();
+  }
+
+  async function deleteRecord(index){
+    if(confirm("Delete this record?")){
+      records.splice(index,1);
+      await set(ref(db, 'dispatchRecords'), records);
+      renderTable();
+    }
+  }
+
+  async function clearAllData(){
+    if(confirm("Are you sure you want to clear ALL records?")){
+      records=[]; filteredRecords=[];
+      await remove(ref(db, 'dispatchRecords'));
+      renderTable();
+    }
+  }
+
+  document.getElementById("exportExcel").addEventListener("click", function(){
+    const ws=XLSX.utils.json_to_sheet(records);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Dispatch");
+    XLSX.writeFile(wb,"dispatch.xlsx");
+  });
+
+  function togglePassword(){ const pwd=document.getElementById("password"); pwd.type=pwd.type==="password"?"text":"password"; }
+  function applyFilter(){ const dept=document.getElementById("filterDept").value, sec=document.getElementById("filterSection").value; filteredRecords=records.filter(r=> (dept===""||r.department===dept)&&(sec===""||r.section===sec)); renderTable(); }
+  function clearFilter(){ document.getElementById("filterDept").value=""; document.getElementById("filterSection").value=""; filteredRecords=[]; renderTable(); }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 </html>
