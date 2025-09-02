@@ -15,7 +15,7 @@ const db = firebase.database();
 
 const users = {
   "admin": { password: "admin123", role: "admin" },
-  "raja": { password: "raja123", role: "Assistant" },
+  "raja": { password: "raja123", role: "Assistant Manager" },
   "akila": { password: "akila123", role: "Akila" },
   "uchitha": { password: "uchitha123", role: "Manager" },
   "rohitha": { password: "rohitha123", role: "Rohitha" },
@@ -248,3 +248,4 @@ function clearFilter(){
   filteredRecords = [];
   renderTable();
 }
+
