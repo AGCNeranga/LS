@@ -25,17 +25,17 @@ const users = {
 const deadlines = {
   "SPORTS": {
     "1st Section": { ctp: "07:00", dispatch: "02:30", departure: "03:15" },
-    "2nd Section": { ctp: "00:00", dispatch: "02:30", departure: "" }
+    "2nd Section": { ctp: "00:00", dispatch: "02:30", departure: "03:15" }
   },
   "Racing UK": {
-    "1st Section UK": { ctp: "22:30", dispatch: "01:15", departure: "" },
-    "2nd Section UK": { ctp: "23:30", dispatch: "02:00", departure: "" },
-    "1st Section RST UK": { ctp: "01:50", dispatch: "02:40", departure: "" },
-    "2nd Section RST UK": { ctp: "01:50", dispatch: "02:55", departure: "" }
+    "1st Section UK": { ctp: "22:30", dispatch: "01:15", departure: "03:15" },
+    "2nd Section UK": { ctp: "23:30", dispatch: "02:00", departure: "03:15" },
+    "1st Section RST UK": { ctp: "01:50", dispatch: "02:40", departure: "03:15" },
+    "2nd Section RST UK": { ctp: "01:50", dispatch: "02:55", departure: "03:15" }
   },
   "Racing AUS": {
-    "AUS Publication": { ctp: "22:30", dispatch: "11:00", departure: "" },
-    "AUS RST": { ctp: "21:30", dispatch: "11:00", departure: "" }
+    "AUS Publication": { ctp: "22:30", dispatch: "11:00", departure: "03:15" },
+    "AUS RST": { ctp: "21:30", dispatch: "11:00", departure: "03:15" }
   }
 };
 
@@ -248,4 +248,5 @@ function clearFilter(){
   filteredRecords = [];
   renderTable();
 }
+
 
