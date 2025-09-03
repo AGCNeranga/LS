@@ -169,10 +169,16 @@ function renderTable(){
   data.forEach((rec, idx) => {
     const tr = document.createElement("tr");
 
-    // Show username with each time in color
-    const pageCTPDisplay = rec.pageCTP ? `<span style="color:blue">${rec.pageCTP} (${rec.addedBy})</span>` : "";
-    const dispatchDisplay = rec.dispatchReceived ? `<span style="color:green">${rec.dispatchReceived} (${rec.addedBy})</span>` : "";
-    const departureDisplay = rec.departure ? `<span style="color:red">${rec.departure} (${rec.addedBy})</span>` : "";
+    // Time normal color, username blue
+    const pageCTPDisplay = rec.pageCTP 
+      ? `${rec.pageCTP} <span style="color:blue">(${rec.addedBy})</span>` 
+      : "";
+    const dispatchDisplay = rec.dispatchReceived 
+      ? `${rec.dispatchReceived} <span style="color:blue">(${rec.addedBy})</span>` 
+      : "";
+    const departureDisplay = rec.departure 
+      ? `${rec.departure} <span style="color:blue">(${rec.addedBy})</span>` 
+      : "";
 
     tr.innerHTML = `
       <td>${rec.date}</td>
