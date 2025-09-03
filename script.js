@@ -1,4 +1,4 @@
-// Firebase config
+// A G C N Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDxE1d9nCYUTjmipUJ3zPSvtaFwypkk0bI",
   authDomain: "dispatchwebapp-66959.firebaseapp.com",
@@ -43,14 +43,14 @@ let currentUser = null;
 let records = [];
 let filteredRecords = [];
 
-// Load records from Firebase
+// A G C N Load records from Firebase
 db.ref("dispatchRecords").on("value", snapshot => {
   const data = snapshot.val();
   records = data ? Object.keys(data).map(key => ({ ...data[key], key })) : [];
   renderTable();
 });
 
-// ---------- LOGIN ----------
+// ---------- A G C N LOGIN ----------
 document.getElementById("loginForm").addEventListener("submit", function(e){
   e.preventDefault();
   const u = document.getElementById("username").value;
@@ -154,7 +154,7 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
   this.reset();
 });
 
-// ---------- TABLE ----------
+// ---------- A G C N TABLE ----------
 function renderTable(){
   const tbody = document.querySelector("#dispatchTable tbody");
   tbody.innerHTML = "";
@@ -248,5 +248,6 @@ function clearFilter(){
   filteredRecords = [];
   renderTable();
 }
+
 
 
