@@ -110,7 +110,7 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
       if (r.date === date) {
         if (currentUser.role === "admin" || !r.departure) {
           r.departure = departure;
-          r.departureBy = currentUser.username; // ✅ track who added departure
+          r.departureBy = currentUser.username;
           const dlDept = deadlines[r.department] && deadlines[r.department][r.section] ? deadlines[r.department][r.section] : {};
           r.deadlineDeparture = dlDept.departure || "";
           r.delayDeparture = isDelayed(r.departure, r.deadlineDeparture, r.date);
@@ -124,15 +124,15 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
     if (existing) {
       if (ctp && (currentUser.role === "admin" || !existing.pageCTP)) {
         existing.pageCTP = ctp;
-        existing.ctpBy = currentUser.username; // ✅ track who added CTP
+        existing.ctpBy = currentUser.username;
       }
       if (dispatch && (currentUser.role === "admin" || !existing.dispatchReceived)) {
         existing.dispatchReceived = dispatch;
-        existing.dispatchBy = currentUser.username; // ✅ track who added dispatch
+        existing.dispatchBy = currentUser.username;
       }
       if (departure && (currentUser.role === "admin" || !existing.departure)) {
         existing.departure = departure;
-        existing.departureBy = currentUser.username; // ✅ track who added departure
+        existing.departureBy = currentUser.username;
       }
 
       if (document.getElementById("notes").value) existing.notes = document.getElementById("notes").value;
@@ -181,15 +181,23 @@ function renderTable(){
   data.forEach((rec, idx) => {
     const tr = document.createElement("tr");
 
-    // Time normal color, username blue
+    // Time normal color for users, blue name for admins
     const pageCTPDisplay = rec.pageCTP 
-      ? `${rec.pageCTP} <span style="color:blue">(${rec.ctpBy || ""})</span>` 
+      ? (currentUser.role === "admin" 
+          ? `${rec.pageCTP} <span style="color:blue">(${rec.ctpBy || ""})</span>` 
+          : rec.pageCTP)
       : "";
+
     const dispatchDisplay = rec.dispatchReceived 
-      ? `${rec.dispatchReceived} <span style="color:blue">(${rec.dispatchBy || ""})</span>` 
+      ? (currentUser.role === "admin" 
+          ? `${rec.dispatchReceived} <span style="color:blue">(${rec.dispatchBy || ""})</span>` 
+          : rec.dispatchReceived)
       : "";
+
     const departureDisplay = rec.departure 
-      ? `${rec.departure} <span style="color:blue">(${rec.departureBy || ""})</span>` 
+      ? (currentUser.role === "admin" 
+          ? `${rec.departure} <span style="color:blue">(${rec.departureBy || ""})</span>` 
+          : rec.departure)
       : "";
 
     tr.innerHTML = `
@@ -206,7 +214,9 @@ function renderTable(){
       <td class="${rec.delayCTP==='Yes'?'delayed':''}">${rec.delayCTP}</td>
       <td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td>
       <td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td>
-      <td>${currentUser.role === "admin" ? (rec.ctpBy || rec.dispatchBy || rec.departureBy || "") : ""}</td>
+      <td>${currentUser.role === "admin" ? 
+        `CTP: ${rec.ctpBy || ""} | Dispatch: ${rec.dispatchBy || ""} | Departure: ${rec.departureBy || ""}` 
+        : ""}</td>
       <td></td>
     `;
 
