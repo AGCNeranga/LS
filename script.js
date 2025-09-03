@@ -110,6 +110,7 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
       if (r.date === date) {
         if (currentUser.role === "admin" || !r.departure) {
           r.departure = departure;
+          r.departureBy = currentUser.username; // ✅ track who added departure
           const dlDept = deadlines[r.department] && deadlines[r.department][r.section] ? deadlines[r.department][r.section] : {};
           r.deadlineDeparture = dlDept.departure || "";
           r.delayDeparture = isDelayed(r.departure, r.deadlineDeparture, r.date);
@@ -121,9 +122,18 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
     let existing = records.find(r => r.date === date && r.department === dept && r.section === sec);
 
     if (existing) {
-      if (ctp && (currentUser.role === "admin" || !existing.pageCTP)) existing.pageCTP = ctp;
-      if (dispatch && (currentUser.role === "admin" || !existing.dispatchReceived)) existing.dispatchReceived = dispatch;
-      if (departure && (currentUser.role === "admin" || !existing.departure)) existing.departure = departure;
+      if (ctp && (currentUser.role === "admin" || !existing.pageCTP)) {
+        existing.pageCTP = ctp;
+        existing.ctpBy = currentUser.username; // ✅ track who added CTP
+      }
+      if (dispatch && (currentUser.role === "admin" || !existing.dispatchReceived)) {
+        existing.dispatchReceived = dispatch;
+        existing.dispatchBy = currentUser.username; // ✅ track who added dispatch
+      }
+      if (departure && (currentUser.role === "admin" || !existing.departure)) {
+        existing.departure = departure;
+        existing.departureBy = currentUser.username; // ✅ track who added departure
+      }
 
       if (document.getElementById("notes").value) existing.notes = document.getElementById("notes").value;
 
@@ -151,7 +161,9 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
         delayCTP: isDelayed(ctp, dl.ctp, date),
         delayDispatch: isDelayed(dispatch, dl.dispatch, date),
         delayDeparture: isDelayed(departure, dl.departure, date),
-        addedBy: currentUser.username
+        ctpBy: ctp ? currentUser.username : "",
+        dispatchBy: dispatch ? currentUser.username : "",
+        departureBy: departure ? currentUser.username : ""
       };
       const newKey = db.ref("dispatchRecords").push().key;
       newRecord.key = newKey;
@@ -171,13 +183,13 @@ function renderTable(){
 
     // Time normal color, username blue
     const pageCTPDisplay = rec.pageCTP 
-      ? `${rec.pageCTP} <span style="color:blue">(${rec.addedBy})</span>` 
+      ? `${rec.pageCTP} <span style="color:blue">(${rec.ctpBy || ""})</span>` 
       : "";
     const dispatchDisplay = rec.dispatchReceived 
-      ? `${rec.dispatchReceived} <span style="color:blue">(${rec.addedBy})</span>` 
+      ? `${rec.dispatchReceived} <span style="color:blue">(${rec.dispatchBy || ""})</span>` 
       : "";
     const departureDisplay = rec.departure 
-      ? `${rec.departure} <span style="color:blue">(${rec.addedBy})</span>` 
+      ? `${rec.departure} <span style="color:blue">(${rec.departureBy || ""})</span>` 
       : "";
 
     tr.innerHTML = `
@@ -194,7 +206,7 @@ function renderTable(){
       <td class="${rec.delayCTP==='Yes'?'delayed':''}">${rec.delayCTP}</td>
       <td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td>
       <td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td>
-      <td>${currentUser.role === "admin" ? rec.addedBy : ""}</td>
+      <td>${currentUser.role === "admin" ? (rec.ctpBy || rec.dispatchBy || rec.departureBy || "") : ""}</td>
       <td></td>
     `;
 
