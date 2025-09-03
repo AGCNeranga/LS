@@ -263,7 +263,10 @@ function clearAllData(){
 }
 
 document.getElementById("exportExcel").addEventListener("click", function(){
-  const ws = XLSX.utils.json_to_sheet(records);
+  // Grab the HTML table
+  const table = document.getElementById("dispatchTable");
+  // Convert table to a worksheet
+  const ws = XLSX.utils.table_to_sheet(table, {raw: true});
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Dispatch");
   XLSX.writeFile(wb, "dispatch.xlsx");
@@ -291,3 +294,4 @@ function clearFilter(){
   filteredRecords = [];
   renderTable();
 }
+
