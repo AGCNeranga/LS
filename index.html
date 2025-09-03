@@ -9,9 +9,9 @@
 <body>
 
 <!-- Header with live time -->
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-  <h2>LS Dispatch Tracker</h2>
-  <span id="liveTime" style="font-weight:bold; font-family:monospace;"></span>
+<h2>LS Dispatch Tracker</h2>
+<div style="text-align:center; margin-bottom:15px; font-size:18px; font-weight:bold;">
+  Live Time: <span id="liveTime"></span>
 </div>
 
 <!-- A G C N LOGIN -->
@@ -137,13 +137,15 @@ function updateLiveTime() {
   const seconds = now.getSeconds().toString().padStart(2, '0');
   const ampm = hours >= 12 ? 'PM' : 'AM';
   const displayHour = (hours % 12) || 12;
-  document.getElementById('liveTime').textContent = `${displayHour.toString().padStart(2,'0')}:${minutes}:${seconds} ${ampm}`;
+  const liveTimeElem = document.getElementById('liveTime');
+  if(liveTimeElem) {
+    liveTimeElem.textContent = `${displayHour.toString().padStart(2,'0')}:${minutes}:${seconds} ${ampm}`;
+  }
 }
-
-// Update live time every second
 setInterval(updateLiveTime, 1000);
-updateLiveTime(); // initial call
+updateLiveTime();
 </script>
 
 </body>
 </html>
+
