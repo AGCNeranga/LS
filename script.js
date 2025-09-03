@@ -170,18 +170,9 @@ function renderTable(){
     const tr = document.createElement("tr");
 
     // Show username with each time in color
-   if (ctp && (currentUser.role === "admin" || !existing.pageCTP)) {
-    existing.pageCTP = ctp;
-    existing.pageCTPBy = currentUser.username; // <- add this
-}
-if (dispatch && (currentUser.role === "admin" || !existing.dispatchReceived)) {
-    existing.dispatchReceived = dispatch;
-    existing.dispatchBy = currentUser.username; // <- add this
-}
-if (departure && (currentUser.role === "admin" || !existing.departure)) {
-    existing.departure = departure;
-    existing.departureBy = currentUser.username; // <- add this
-}
+    const pageCTPDisplay = rec.pageCTP ? `<span style="color:blue">${rec.pageCTP} (${rec.addedBy})</span>` : "";
+    const dispatchDisplay = rec.dispatchReceived ? `<span style="color:green">${rec.dispatchReceived} (${rec.addedBy})</span>` : "";
+    const departureDisplay = rec.departure ? `<span style="color:red">${rec.departure} (${rec.addedBy})</span>` : "";
 
     tr.innerHTML = `
       <td>${rec.date}</td>
@@ -272,4 +263,3 @@ function clearFilter(){
   filteredRecords = [];
   renderTable();
 }
-
