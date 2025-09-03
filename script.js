@@ -118,9 +118,17 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
   } else {
     let existing = records.find(r => r.date === date && r.department === dept && r.section === sec);
     if(existing){
-      if(ctp) existing.pageCTP = ctp;
-      if(dispatch) existing.dispatchReceived = dispatch;
-      if(departure) existing.departure = departure;
+      if(currentUser.role === "admin"){
+        // Admin can edit all times
+        if(ctp) existing.pageCTP = ctp;
+        if(dispatch) existing.dispatchReceived = dispatch;
+        if(departure) existing.departure = departure;
+      } else {
+        // Normal user: can only add if not already added
+        if(!existing.pageCTP && ctp) existing.pageCTP = ctp;
+        if(!existing.dispatchReceived && dispatch) existing.dispatchReceived = dispatch;
+        if(!existing.departure && departure) existing.departure = departure;
+      }
       if(document.getElementById("notes").value) existing.notes = document.getElementById("notes").value;
       existing.deadlineCTP = dl.ctp || "";
       existing.deadlineDispatch = dl.dispatch || "";
@@ -248,6 +256,3 @@ function clearFilter(){
   filteredRecords = [];
   renderTable();
 }
-
-
-
