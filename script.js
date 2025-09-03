@@ -124,7 +124,7 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
         if(dispatch) existing.dispatchReceived = dispatch;
         if(departure) existing.departure = departure;
       } else {
-        // Normal user: can only add if field is empty
+        // Normal user: can only add if not already added
         if(!existing.pageCTP && ctp) existing.pageCTP = ctp;
         if(!existing.dispatchReceived && dispatch) existing.dispatchReceived = dispatch;
         if(!existing.departure && departure) existing.departure = departure;
@@ -201,7 +201,7 @@ function renderTable(){
       }
       tbody.appendChild(tr);
     });
-}
+  }
 
 function editRecord(index){
   const rec = records[index];
