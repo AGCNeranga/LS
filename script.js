@@ -43,14 +43,14 @@ let currentUser = null;
 let records = [];
 let filteredRecords = [];
 
-// Load records from Firebase
+// A G C N Load records from Firebase
 db.ref("dispatchRecords").on("value", snapshot => {
   const data = snapshot.val();
   records = data ? Object.keys(data).map(key => ({ ...data[key], key })) : [];
   renderTable();
 });
 
-// ---------- LOGIN ----------
+// ---------- A G C N LOGIN ----------
 document.getElementById("loginForm").addEventListener("submit", function(e){
   e.preventDefault();
   const u = document.getElementById("username").value;
@@ -102,104 +102,116 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
   const ctp = document.getElementById("pageCTP").value;
   const dispatch = document.getElementById("dispatchReceived").value;
   const departure = document.getElementById("departure").value;
+  const departureAll = document.getElementById("departureAll").checked;
   const dl = deadlines[dept] && deadlines[dept][sec] ? deadlines[dept][sec] : {};
 
-  // Find existing record
-  let existing = records.find(r => r.date === date && r.department === dept && r.section === sec);
-
-  if(!existing){
-    // Create new record if not exists
-    existing = {
-      date: date,
-      department: dept,
-      section: sec,
-      pageCTP: {},
-      dispatchReceived: {},
-      departure: {},
-      notes: "",
-      addedBy: "",
-      key: db.ref("dispatchRecords").push().key
-    };
-    records.push(existing);
+  if(departureAll && departure){
+    records.forEach(r => {
+      if(r.date === date){
+        r.departure = departure;
+        const dlDept = deadlines[r.department] && deadlines[r.department][r.section] ? deadlines[r.department][r.section] : {};
+        r.deadlineDeparture = dlDept.departure || "";
+        r.delayDeparture = isDelayed(r.departure, r.deadlineDeparture, r.date);
+        db.ref("dispatchRecords/" + r.key).set(r);
+      }
+    });
+  } else {
+    let existing = records.find(r => r.date === date && r.department === dept && r.section === sec);
+    if(existing){
+      if(currentUser.role === "admin"){
+        // Admin can edit all times
+        if(ctp) existing.pageCTP = ctp;
+        if(dispatch) existing.dispatchReceived = dispatch;
+        if(departure) existing.departure = departure;
+      } else {
+        // Normal user: can only add if field is empty
+        if(!existing.pageCTP && ctp) existing.pageCTP = ctp;
+        if(!existing.dispatchReceived && dispatch) existing.dispatchReceived = dispatch;
+        if(!existing.departure && departure) existing.departure = departure;
+      }
+      if(document.getElementById("notes").value) existing.notes = document.getElementById("notes").value;
+      existing.deadlineCTP = dl.ctp || "";
+      existing.deadlineDispatch = dl.dispatch || "";
+      existing.deadlineDeparture = dl.departure || "";
+      existing.delayCTP = isDelayed(existing.pageCTP, dl.ctp, date);
+      existing.delayDispatch = isDelayed(existing.dispatchReceived, dl.dispatch, date);
+      existing.delayDeparture = isDelayed(existing.departure, dl.departure, date);
+      db.ref("dispatchRecords/" + existing.key).set(existing);
+    } else {
+      const newRecord = {
+        date: date,
+        department: dept,
+        section: sec,
+        pageCTP: ctp,
+        dispatchReceived: dispatch,
+        departure: departure,
+        notes: document.getElementById("notes").value,
+        deadlineCTP: dl.ctp || "",
+        deadlineDispatch: dl.dispatch || "",
+        deadlineDeparture: dl.departure || "",
+        delayCTP: isDelayed(ctp, dl.ctp, date),
+        delayDispatch: isDelayed(dispatch, dl.dispatch, date),
+        delayDeparture: isDelayed(departure, dl.departure, date),
+        addedBy: currentUser.username
+      };
+      const newKey = db.ref("dispatchRecords").push().key;
+      newRecord.key = newKey;
+      db.ref("dispatchRecords/" + newKey).set(newRecord);
+    }
   }
-
-  // Add current user input to the record
-  if(ctp) existing.pageCTP[currentUser.username] = ctp;
-  if(dispatch) existing.dispatchReceived[currentUser.username] = dispatch;
-  if(departure) existing.departure[currentUser.username] = departure;
-  if(document.getElementById("notes").value) existing.notes = document.getElementById("notes").value;
-  existing.addedBy = currentUser.username;
-
-  db.ref("dispatchRecords/" + existing.key).set(existing);
   this.reset();
 });
 
-// ---------- RENDER TABLE ----------
+// ---------- A G C N TABLE ----------
 function renderTable(){
   const tbody = document.querySelector("#dispatchTable tbody");
   tbody.innerHTML = "";
   const data = filteredRecords.length ? filteredRecords : records;
-
   data.forEach((rec, idx) => {
     const tr = document.createElement("tr");
-
-    // Flatten user inputs into columns
-    const pageCTPArr = Object.values(rec.pageCTP).join(" / ");
-    const dispatchArr = Object.values(rec.dispatchReceived).join(" / ");
-    const departureArr = Object.values(rec.departure).join(" / ");
-
-    // Calculate delay based on first user's input (or skip)
-    const firstUser = Object.keys(rec.pageCTP)[0];
-    const delayCTP = firstUser ? isDelayed(rec.pageCTP[firstUser], deadlines[rec.department][rec.section].ctp, rec.date) : "";
-    const delayDispatch = firstUser ? isDelayed(rec.dispatchReceived[firstUser], deadlines[rec.department][rec.section].dispatch, rec.date) : "";
-    const delayDeparture = firstUser ? isDelayed(rec.departure[firstUser], deadlines[rec.department][rec.section].departure, rec.date) : "";
-
     tr.innerHTML = `
       <td>${rec.date}</td>
       <td>${rec.department}</td>
       <td>${rec.section}</td>
-      <td>${pageCTPArr}</td>
-      <td>${dispatchArr}</td>
-      <td>${departureArr}</td>
-      <td>${rec.notes || ""}</td>
-      <td>${deadlines[rec.department][rec.section].ctp}</td>
-      <td>${deadlines[rec.department][rec.section].dispatch}</td>
-      <td>${deadlines[rec.department][rec.section].departure}</td>
-      <td class="${delayCTP==='Yes'?'delayed':''}">${delayCTP}</td>
-      <td class="${delayDispatch==='Yes'?'delayed':''}">${delayDispatch}</td>
-      <td class="${delayDeparture==='Yes'?'delayed':''}">${delayDeparture}</td>
-      <td>${rec.addedBy}</td>
-      <td></td>
-    `;
-    const actionsCell = tr.querySelector("td:last-child");
-    if(currentUser.role === "admin"){
-      const editBtn = document.createElement("button");
-      editBtn.textContent = "Edit";
-      editBtn.className = "actionBtn";
-      editBtn.onclick = () => editRecord(idx);
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "Delete";
-      delBtn.className = "actionBtn delete";
-      delBtn.onclick = () => deleteRecord(idx);
-      actionsCell.appendChild(editBtn);
-      actionsCell.appendChild(delBtn);
-    }
-    tbody.appendChild(tr);
-  });
+      <td>${rec.pageCTP}</td>
+      <td>${rec.dispatchReceived}</td>
+      <td>${rec.departure}</td>
+      <td>${rec.notes}</td>
+      <td>${rec.deadlineCTP}</td>
+      <td>${rec.deadlineDispatch}</td>
+      <td>${rec.deadlineDeparture}</td>
+      <td class="${rec.delayCTP==='Yes'?'delayed':''}">${rec.delayCTP}</td>
+      <td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td>
+      <td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td>
+      <td>${currentUser.role === "admin" ? rec.addedBy : ""}</td>
+        <td></td>
+      `;
+      const actionsCell = tr.querySelector("td:last-child");
+      if(currentUser.role === "admin"){
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Edit";
+        editBtn.className = "actionBtn";
+        editBtn.onclick = () => editRecord(idx);
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.className = "actionBtn delete";
+        delBtn.onclick = () => deleteRecord(idx);
+        actionsCell.appendChild(editBtn);
+        actionsCell.appendChild(delBtn);
+      }
+      tbody.appendChild(tr);
+    });
 }
 
-// ---------- EDIT / DELETE ----------
 function editRecord(index){
   const rec = records[index];
   document.getElementById("date").value = rec.date;
   document.getElementById("department").value = rec.department;
   document.getElementById("section").value = rec.section;
-
-  // Pre-fill current user values if exists
-  document.getElementById("pageCTP").value = rec.pageCTP[currentUser.username] || "";
-  document.getElementById("dispatchReceived").value = rec.dispatchReceived[currentUser.username] || "";
-  document.getElementById("departure").value = rec.departure[currentUser.username] || "";
-  document.getElementById("notes").value = rec.notes || "";
+  document.getElementById("pageCTP").value = rec.pageCTP;
+  document.getElementById("dispatchReceived").value = rec.dispatchReceived;
+  document.getElementById("departure").value = rec.departure;
+  document.getElementById("notes").value = rec.notes;
 }
 
 function deleteRecord(index){
@@ -215,18 +227,8 @@ function clearAllData(){
   }
 }
 
-// ---------- EXPORT EXCEL ----------
 document.getElementById("exportExcel").addEventListener("click", function(){
-  const ws = XLSX.utils.json_to_sheet(records.map(r => ({
-    date: r.date,
-    department: r.department,
-    section: r.section,
-    pageCTP: Object.values(r.pageCTP).join(" / "),
-    dispatchReceived: Object.values(r.dispatchReceived).join(" / "),
-    departure: Object.values(r.departure).join(" / "),
-    notes: r.notes,
-    addedBy: r.addedBy
-  })));
+  const ws = XLSX.utils.json_to_sheet(records);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Dispatch");
   XLSX.writeFile(wb, "dispatch.xlsx");
