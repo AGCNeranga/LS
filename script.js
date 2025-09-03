@@ -105,46 +105,48 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
   const departureAll = document.getElementById("departureAll").checked;
   const dl = deadlines[dept] && deadlines[dept][sec] ? deadlines[dept][sec] : {};
 
-  if(departureAll && departure){
+  if (departureAll && departure) {
     records.forEach(r => {
-      if(r.date === date){
-        r.departure = String(departure);
-        const dlDept = deadlines[r.department] && deadlines[r.department][r.section] ? deadlines[r.department][r.section] : {};
-        r.deadlineDeparture = dlDept.departure || "";
-        r.delayDeparture = isDelayed(r.departure, r.deadlineDeparture, r.date);
-        db.ref("dispatchRecords/" + r.key).set(r);
+      if (r.date === date) {
+        // Admin can update all, normal user only if empty
+        if (currentUser.role === "admin" || !r.departure) {
+          r.departure = departure;
+          const dlDept = deadlines[r.department] && deadlines[r.department][r.section] ? deadlines[r.department][r.section] : {};
+          r.deadlineDeparture = dlDept.departure || "";
+          r.delayDeparture = isDelayed(r.departure, r.deadlineDeparture, r.date);
+          db.ref("dispatchRecords/" + r.key).set(r);
+        }
       }
     });
   } else {
     let existing = records.find(r => r.date === date && r.department === dept && r.section === sec);
-    if(existing){
-      // 🔹 Update all records for that date
-      records.forEach(r => {
-        if(r.date === date){
-          if(ctp) r.pageCTP = String(ctp);
-          if(dispatch) r.dispatchReceived = String(dispatch);
-          if(departure) r.departure = String(departure);
-          if(document.getElementById("notes").value) r.notes = document.getElementById("notes").value;
 
-          const dlDept = deadlines[r.department] && deadlines[r.department][r.section] ? deadlines[r.department][r.section] : {};
-          r.deadlineCTP = dlDept.ctp || "";
-          r.deadlineDispatch = dlDept.dispatch || "";
-          r.deadlineDeparture = dlDept.departure || "";
-          r.delayCTP = isDelayed(r.pageCTP, dlDept.ctp, date);
-          r.delayDispatch = isDelayed(r.dispatchReceived, dlDept.dispatch, date);
-          r.delayDeparture = isDelayed(r.departure, dlDept.departure, date);
+    if (existing) {
+      // ---- Only allow "one-time entry" for users, admin can always update ----
+      if (ctp && (currentUser.role === "admin" || !existing.pageCTP)) existing.pageCTP = ctp;
+      if (dispatch && (currentUser.role === "admin" || !existing.dispatchReceived)) existing.dispatchReceived = dispatch;
+      if (departure && (currentUser.role === "admin" || !existing.departure)) existing.departure = departure;
 
-          db.ref("dispatchRecords/" + r.key).set(r);
-        }
-      });
+      if (document.getElementById("notes").value) existing.notes = document.getElementById("notes").value;
+
+      existing.deadlineCTP = dl.ctp || "";
+      existing.deadlineDispatch = dl.dispatch || "";
+      existing.deadlineDeparture = dl.departure || "";
+      existing.delayCTP = isDelayed(existing.pageCTP, dl.ctp, date);
+      existing.delayDispatch = isDelayed(existing.dispatchReceived, dl.dispatch, date);
+      existing.delayDeparture = isDelayed(existing.departure, dl.departure, date);
+
+      db.ref("dispatchRecords/" + existing.key).set(existing);
+
     } else {
+      // New record → user can fill freely
       const newRecord = {
         date: date,
         department: dept,
         section: sec,
-        pageCTP: ctp,
-        dispatchReceived: dispatch,
-        departure: departure,
+        pageCTP: ctp || "",
+        dispatchReceived: dispatch || "",
+        departure: departure || "",
         notes: document.getElementById("notes").value,
         deadlineCTP: dl.ctp || "",
         deadlineDispatch: dl.dispatch || "",
@@ -161,6 +163,7 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
   }
   this.reset();
 });
+
 
 // ---------- A G C N TABLE ----------
 function renderTable(){
@@ -256,3 +259,4 @@ function clearFilter(){
   filteredRecords = [];
   renderTable();
 }
+
