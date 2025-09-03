@@ -108,7 +108,6 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
   if (departureAll && departure) {
     records.forEach(r => {
       if (r.date === date) {
-        // Admin can update all, normal user only if empty
         if (currentUser.role === "admin" || !r.departure) {
           r.departure = departure;
           const dlDept = deadlines[r.department] && deadlines[r.department][r.section] ? deadlines[r.department][r.section] : {};
@@ -122,7 +121,6 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
     let existing = records.find(r => r.date === date && r.department === dept && r.section === sec);
 
     if (existing) {
-      // ---- Only allow "one-time entry" for users, admin can always update ----
       if (ctp && (currentUser.role === "admin" || !existing.pageCTP)) existing.pageCTP = ctp;
       if (dispatch && (currentUser.role === "admin" || !existing.dispatchReceived)) existing.dispatchReceived = dispatch;
       if (departure && (currentUser.role === "admin" || !existing.departure)) existing.departure = departure;
@@ -139,7 +137,6 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
       db.ref("dispatchRecords/" + existing.key).set(existing);
 
     } else {
-      // New record → user can fill freely
       const newRecord = {
         date: date,
         department: dept,
@@ -164,7 +161,6 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
   this.reset();
 });
 
-
 // ---------- A G C N TABLE ----------
 function renderTable(){
   const tbody = document.querySelector("#dispatchTable tbody");
@@ -172,13 +168,19 @@ function renderTable(){
   const data = filteredRecords.length ? filteredRecords : records;
   data.forEach((rec, idx) => {
     const tr = document.createElement("tr");
+
+    // Show username with each time in color
+    const pageCTPDisplay = rec.pageCTP ? `<span style="color:blue">${rec.pageCTP} (${rec.addedBy})</span>` : "";
+    const dispatchDisplay = rec.dispatchReceived ? `<span style="color:green">${rec.dispatchReceived} (${rec.addedBy})</span>` : "";
+    const departureDisplay = rec.departure ? `<span style="color:red">${rec.departure} (${rec.addedBy})</span>` : "";
+
     tr.innerHTML = `
       <td>${rec.date}</td>
       <td>${rec.department}</td>
       <td>${rec.section}</td>
-      <td>${rec.pageCTP}</td>
-      <td>${rec.dispatchReceived}</td>
-      <td>${rec.departure}</td>
+      <td>${pageCTPDisplay}</td>
+      <td>${dispatchDisplay}</td>
+      <td>${departureDisplay}</td>
       <td>${rec.notes}</td>
       <td>${rec.deadlineCTP}</td>
       <td>${rec.deadlineDispatch}</td>
@@ -189,6 +191,7 @@ function renderTable(){
       <td>${currentUser.role === "admin" ? rec.addedBy : ""}</td>
       <td></td>
     `;
+
     const actionsCell = tr.querySelector("td:last-child");
     if(currentUser.role === "admin"){
       const editBtn = document.createElement("button");
@@ -202,6 +205,7 @@ function renderTable(){
       actionsCell.appendChild(editBtn);
       actionsCell.appendChild(delBtn);
     }
+
     tbody.appendChild(tr);
   });
 }
@@ -259,4 +263,3 @@ function clearFilter(){
   filteredRecords = [];
   renderTable();
 }
-
