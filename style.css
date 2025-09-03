@@ -23,3 +23,10 @@ button.actionBtn:hover { opacity:0.9; }
 .password-container .toggle-password { position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; font-size:14px; color:#33691e; user-select:none; }
 #filters { display:flex; gap:10px; margin:15px auto; max-width:950px; justify-content:flex-end; }
 #filters select { width:200px; }
+
+/* Blocked cells for normal users */
+.blocked {
+  background-color: #ffcccc; /* light red */
+}
+
+
