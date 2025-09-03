@@ -108,7 +108,7 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
   if(departureAll && departure){
     records.forEach(r => {
       if(r.date === date){
-        r.departure = departure;
+        r.departure = String(departure);
         const dlDept = deadlines[r.department] && deadlines[r.department][r.section] ? deadlines[r.department][r.section] : {};
         r.deadlineDeparture = dlDept.departure || "";
         r.delayDeparture = isDelayed(r.departure, r.deadlineDeparture, r.date);
@@ -118,17 +118,25 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
   } else {
     let existing = records.find(r => r.date === date && r.department === dept && r.section === sec);
     if(existing){
-      if(ctp) existing.pageCTP = ctp;
-      if(dispatch) existing.dispatchReceived = dispatch;
-      if(departure) existing.departure = departure;
-      if(document.getElementById("notes").value) existing.notes = document.getElementById("notes").value;
-      existing.deadlineCTP = dl.ctp || "";
-      existing.deadlineDispatch = dl.dispatch || "";
-      existing.deadlineDeparture = dl.departure || "";
-      existing.delayCTP = isDelayed(existing.pageCTP, dl.ctp, date);
-      existing.delayDispatch = isDelayed(existing.dispatchReceived, dl.dispatch, date);
-      existing.delayDeparture = isDelayed(existing.departure, dl.departure, date);
-      db.ref("dispatchRecords/" + existing.key).set(existing);
+      // 🔹 Update all records for that date
+      records.forEach(r => {
+        if(r.date === date){
+          if(ctp) r.pageCTP = String(ctp);
+          if(dispatch) r.dispatchReceived = String(dispatch);
+          if(departure) r.departure = String(departure);
+          if(document.getElementById("notes").value) r.notes = document.getElementById("notes").value;
+
+          const dlDept = deadlines[r.department] && deadlines[r.department][r.section] ? deadlines[r.department][r.section] : {};
+          r.deadlineCTP = dlDept.ctp || "";
+          r.deadlineDispatch = dlDept.dispatch || "";
+          r.deadlineDeparture = dlDept.departure || "";
+          r.delayCTP = isDelayed(r.pageCTP, dlDept.ctp, date);
+          r.delayDispatch = isDelayed(r.dispatchReceived, dlDept.dispatch, date);
+          r.delayDeparture = isDelayed(r.departure, dlDept.departure, date);
+
+          db.ref("dispatchRecords/" + r.key).set(r);
+        }
+      });
     } else {
       const newRecord = {
         date: date,
@@ -176,24 +184,24 @@ function renderTable(){
       <td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td>
       <td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td>
       <td>${currentUser.role === "admin" ? rec.addedBy : ""}</td>
-        <td></td>
-      `;
-      const actionsCell = tr.querySelector("td:last-child");
-      if(currentUser.role === "admin"){
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        editBtn.className = "actionBtn";
-        editBtn.onclick = () => editRecord(idx);
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "Delete";
-        delBtn.className = "actionBtn delete";
-        delBtn.onclick = () => deleteRecord(idx);
-        actionsCell.appendChild(editBtn);
-        actionsCell.appendChild(delBtn);
-      }
-      tbody.appendChild(tr);
-    });
-  }
+      <td></td>
+    `;
+    const actionsCell = tr.querySelector("td:last-child");
+    if(currentUser.role === "admin"){
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "Edit";
+      editBtn.className = "actionBtn";
+      editBtn.onclick = () => editRecord(idx);
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Delete";
+      delBtn.className = "actionBtn delete";
+      delBtn.onclick = () => deleteRecord(idx);
+      actionsCell.appendChild(editBtn);
+      actionsCell.appendChild(delBtn);
+    }
+    tbody.appendChild(tr);
+  });
+}
 
 function editRecord(index){
   const rec = records[index];
@@ -248,5 +256,3 @@ function clearFilter(){
   filteredRecords = [];
   renderTable();
 }
-
-
