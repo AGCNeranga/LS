@@ -102,70 +102,51 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
   const ctp = document.getElementById("pageCTP").value;
   const dispatch = document.getElementById("dispatchReceived").value;
   const departure = document.getElementById("departure").value;
-  const departureAll = document.getElementById("departureAll").checked;
   const dl = deadlines[dept] && deadlines[dept][sec] ? deadlines[dept][sec] : {};
 
-  if(departureAll && departure){
-    // Admin override for all departures
-    records.forEach(r => {
-      if(r.date === date){
-        r.departure = departure;
-        const dlDept = deadlines[r.department] && deadlines[r.department][r.section] ? deadlines[r.department][r.section] : {};
-        r.deadlineDeparture = dlDept.departure || "";
-        r.delayDeparture = isDelayed(r.departure, r.deadlineDeparture, r.date);
-        db.ref("dispatchRecords/" + r.key).set(r);
-      }
-    });
+  let existing = records.find(r => r.date === date && r.department === dept && r.section === sec);
+
+  if(existing){
+    // Only update empty fields (each field can be filled once)
+    if(ctp && !existing.pageCTP){
+      existing.pageCTP = ctp;
+      existing.deadlineCTP = dl.ctp || "";
+      existing.delayCTP = isDelayed(ctp, dl.ctp, date);
+    }
+    if(dispatch && !existing.dispatchReceived){
+      existing.dispatchReceived = dispatch;
+      existing.deadlineDispatch = dl.dispatch || "";
+      existing.delayDispatch = isDelayed(dispatch, dl.dispatch, date);
+    }
+    if(departure && !existing.departure){
+      existing.departure = departure;
+      existing.deadlineDeparture = dl.departure || "";
+      existing.delayDeparture = isDelayed(departure, dl.departure, date);
+    }
+    if(document.getElementById("notes").value) existing.notes = document.getElementById("notes").value;
+
+    db.ref("dispatchRecords/" + existing.key).set(existing);
   } else {
-    // Check if this user already added a record for this date/department/section
-    let existing = records.find(r => 
-      r.date === date && 
-      r.department === dept && 
-      r.section === sec && 
-      r.addedBy === currentUser.username
-    );
-
-    if(existing){
-      alert("You have already added a record for this date/department/section. You cannot add again.");
-      return; // stop adding
-    }
-
-    // Admins can still update any existing record
-    let recordToUpdate = records.find(r => r.date === date && r.department === dept && r.section === sec);
-    if(recordToUpdate && currentUser.role === "admin"){
-      if(ctp) recordToUpdate.pageCTP = ctp;
-      if(dispatch) recordToUpdate.dispatchReceived = dispatch;
-      if(departure) recordToUpdate.departure = departure;
-      if(document.getElementById("notes").value) recordToUpdate.notes = document.getElementById("notes").value;
-      recordToUpdate.deadlineCTP = dl.ctp || "";
-      recordToUpdate.deadlineDispatch = dl.dispatch || "";
-      recordToUpdate.deadlineDeparture = dl.departure || "";
-      recordToUpdate.delayCTP = isDelayed(recordToUpdate.pageCTP, dl.ctp, date);
-      recordToUpdate.delayDispatch = isDelayed(recordToUpdate.dispatchReceived, dl.dispatch, date);
-      recordToUpdate.delayDeparture = isDelayed(recordToUpdate.departure, dl.departure, date);
-      db.ref("dispatchRecords/" + recordToUpdate.key).set(recordToUpdate);
-    } else {
-      // Add new record
-      const newRecord = {
-        date: date,
-        department: dept,
-        section: sec,
-        pageCTP: ctp,
-        dispatchReceived: dispatch,
-        departure: departure,
-        notes: document.getElementById("notes").value,
-        deadlineCTP: dl.ctp || "",
-        deadlineDispatch: dl.dispatch || "",
-        deadlineDeparture: dl.departure || "",
-        delayCTP: isDelayed(ctp, dl.ctp, date),
-        delayDispatch: isDelayed(dispatch, dl.dispatch, date),
-        delayDeparture: isDelayed(departure, dl.departure, date),
-        addedBy: currentUser.username
-      };
-      const newKey = db.ref("dispatchRecords").push().key;
-      newRecord.key = newKey;
-      db.ref("dispatchRecords/" + newKey).set(newRecord);
-    }
+    // Create new record if nothing exists for that date/department/section
+    const newRecord = {
+      date: date,
+      department: dept,
+      section: sec,
+      pageCTP: ctp || "",
+      dispatchReceived: dispatch || "",
+      departure: departure || "",
+      notes: document.getElementById("notes").value,
+      deadlineCTP: dl.ctp || "",
+      deadlineDispatch: dl.dispatch || "",
+      deadlineDeparture: dl.departure || "",
+      delayCTP: ctp ? isDelayed(ctp, dl.ctp, date) : "No",
+      delayDispatch: dispatch ? isDelayed(dispatch, dl.dispatch, date) : "No",
+      delayDeparture: departure ? isDelayed(departure, dl.departure, date) : "No",
+      addedBy: currentUser.username
+    };
+    const newKey = db.ref("dispatchRecords").push().key;
+    newRecord.key = newKey;
+    db.ref("dispatchRecords/" + newKey).set(newRecord);
   }
 
   this.reset();
@@ -193,24 +174,24 @@ function renderTable(){
       <td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td>
       <td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td>
       <td>${currentUser.role === "admin" ? rec.addedBy : ""}</td>
-        <td></td>
+      <td></td>
       `;
-      const actionsCell = tr.querySelector("td:last-child");
-      if(currentUser.role === "admin"){
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        editBtn.className = "actionBtn";
-        editBtn.onclick = () => editRecord(idx);
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "Delete";
-        delBtn.className = "actionBtn delete";
-        delBtn.onclick = () => deleteRecord(idx);
-        actionsCell.appendChild(editBtn);
-        actionsCell.appendChild(delBtn);
-      }
-      tbody.appendChild(tr);
-    });
-  }
+    const actionsCell = tr.querySelector("td:last-child");
+    if(currentUser.role === "admin"){
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "Edit";
+      editBtn.className = "actionBtn";
+      editBtn.onclick = () => editRecord(idx);
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Delete";
+      delBtn.className = "actionBtn delete";
+      delBtn.onclick = () => deleteRecord(idx);
+      actionsCell.appendChild(editBtn);
+      actionsCell.appendChild(delBtn);
+    }
+    tbody.appendChild(tr);
+  });
+}
 
 function editRecord(index){
   const rec = records[index];
