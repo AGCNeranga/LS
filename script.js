@@ -118,16 +118,16 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
   } else {
     let existing = records.find(r => r.date === date && r.department === dept && r.section === sec);
     if(existing){
+      // Only admin can overwrite times
       if(currentUser.role === "admin"){
-        // Admin can edit all times
         if(ctp) existing.pageCTP = ctp;
         if(dispatch) existing.dispatchReceived = dispatch;
         if(departure) existing.departure = departure;
       } else {
-        // Normal user: can only add if not already added
-        if(!existing.pageCTP && ctp) existing.pageCTP = ctp;
-        if(!existing.dispatchReceived && dispatch) existing.dispatchReceived = dispatch;
-        if(!existing.departure && departure) existing.departure = departure;
+        // Normal users: only add if empty
+        if(ctp && !existing.pageCTP) existing.pageCTP = ctp;
+        if(dispatch && !existing.dispatchReceived) existing.dispatchReceived = dispatch;
+        if(departure && !existing.departure) existing.departure = departure;
       }
       if(document.getElementById("notes").value) existing.notes = document.getElementById("notes").value;
       existing.deadlineCTP = dl.ctp || "";
@@ -136,6 +136,7 @@ document.getElementById("dispatchForm").addEventListener("submit", function(e){
       existing.delayCTP = isDelayed(existing.pageCTP, dl.ctp, date);
       existing.delayDispatch = isDelayed(existing.dispatchReceived, dl.dispatch, date);
       existing.delayDeparture = isDelayed(existing.departure, dl.departure, date);
+
       db.ref("dispatchRecords/" + existing.key).set(existing);
     } else {
       const newRecord = {
@@ -169,13 +170,19 @@ function renderTable(){
   const data = filteredRecords.length ? filteredRecords : records;
   data.forEach((rec, idx) => {
     const tr = document.createElement("tr");
+
+    // Mark normal user filled cells as blocked
+    const blockedCtp = rec.pageCTP && currentUser.role !== "admin";
+    const blockedDispatch = rec.dispatchReceived && currentUser.role !== "admin";
+    const blockedDeparture = rec.departure && currentUser.role !== "admin";
+
     tr.innerHTML = `
       <td>${rec.date}</td>
       <td>${rec.department}</td>
       <td>${rec.section}</td>
-      <td>${rec.pageCTP}</td>
-      <td>${rec.dispatchReceived}</td>
-      <td>${rec.departure}</td>
+      <td class="${blockedCtp?'blocked':''} ${rec.delayCTP==='Yes'?'delayed':''}">${rec.pageCTP}</td>
+      <td class="${blockedDispatch?'blocked':''} ${rec.delayDispatch==='Yes'?'delayed':''}">${rec.dispatchReceived}</td>
+      <td class="${blockedDeparture?'blocked':''} ${rec.delayDeparture==='Yes'?'delayed':''}">${rec.departure}</td>
       <td>${rec.notes}</td>
       <td>${rec.deadlineCTP}</td>
       <td>${rec.deadlineDispatch}</td>
@@ -184,25 +191,26 @@ function renderTable(){
       <td class="${rec.delayDispatch==='Yes'?'delayed':''}">${rec.delayDispatch}</td>
       <td class="${rec.delayDeparture==='Yes'?'delayed':''}">${rec.delayDeparture}</td>
       <td>${currentUser.role === "admin" ? rec.addedBy : ""}</td>
-        <td></td>
-      `;
-      const actionsCell = tr.querySelector("td:last-child");
-      if(currentUser.role === "admin"){
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        editBtn.className = "actionBtn";
-        editBtn.onclick = () => editRecord(idx);
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "Delete";
-        delBtn.className = "actionBtn delete";
-        delBtn.onclick = () => deleteRecord(idx);
-        actionsCell.appendChild(editBtn);
-        actionsCell.appendChild(delBtn);
-      }
-      tbody.appendChild(tr);
-    });
-  }
+      <td></td>
+    `;
+    const actionsCell = tr.querySelector("td:last-child");
+    if(currentUser.role === "admin"){
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "Edit";
+      editBtn.className = "actionBtn";
+      editBtn.onclick = () => editRecord(idx);
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Delete";
+      delBtn.className = "actionBtn delete";
+      delBtn.onclick = () => deleteRecord(idx);
+      actionsCell.appendChild(editBtn);
+      actionsCell.appendChild(delBtn);
+    }
+    tbody.appendChild(tr);
+  });
+}
 
+// ---------- EDIT, DELETE, EXPORT, FILTER ----------
 function editRecord(index){
   const rec = records[index];
   document.getElementById("date").value = rec.date;
@@ -236,8 +244,7 @@ document.getElementById("exportExcel").addEventListener("click", function(){
 
 function togglePassword() {
   const pwd = document.getElementById("password");
-  if(pwd.type === "password") pwd.type = "text";
-  else pwd.type = "password";
+  pwd.type = pwd.type === "password" ? "text" : "password";
 }
 
 function applyFilter(){
